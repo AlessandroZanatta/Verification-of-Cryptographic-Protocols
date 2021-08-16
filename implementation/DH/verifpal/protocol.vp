@@ -1,0 +1,49 @@
+// First of all, we define the type of attacker.
+// It can be passive or active. Differences between the two
+// is the same as usual.
+attacker[active]
+
+principal Initiator [
+    // Generates initiator ephemeral key
+    generates i
+
+    // Computes half key
+    g_i = G^i
+]
+
+// Sends the half key to the other party (which now knows the symbol g_i)
+Initiator -> Responder: g_i
+
+principal Responder [
+    // Generates responder ephemeral key
+    generates r
+
+    // Computes half key
+    g_r = G^r
+    
+    // Computes key
+    k_r = g_i ^ r
+]
+
+Responder -> Initiator: g_r
+
+principal Initiator [
+    k_i = g_r^i
+
+    // Generates a fresh secret message
+    generates m
+    
+    // Symetrically encrypts the message
+    c = ENC(k_i, m)
+]
+
+Initiator -> Responder: c
+
+// Query the model for security properties
+queries [
+    // This is basically a sanity check about the executability of the model. Attacker should be able to know the ciphertext.
+    confidentiality? c
+
+    // This is the actual secrecy query.
+    confidentiality? m
+]

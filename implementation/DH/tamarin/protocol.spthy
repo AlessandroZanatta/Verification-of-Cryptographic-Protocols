@@ -1,0 +1,197 @@
+/*
+ * Anonymous Diffie-Hellman
+ */
+theory DiffieHellman
+
+begin
+  builtins: diffie-hellman, symmetric-encryption
+ 
+/********************************************************************************/
+/* Protocol implementation                                                      */
+/********************************************************************************/
+
+  rule 1_Initiator:
+    let
+      g_i = 'g' ^ ~i                          // Compute the half key of the initiator
+    in
+      [ 
+        In(iUser),                            // Let the attacker chose the user that initiates the protocol
+        Fr(~i)                                // Generate a fresh value for the initiator's ephemeral key
+      ]
+    --[ 
+        /*
+         * Ensure that the initiator is either $Alice or $Bob
+         */
+        ChoosePrincipal(iUser, $Alice, $Bob)
+      ]->
+      [ 
+        Out(g_i),                             // Output the half key of the initiator
+        InitatorState_1(iUser, ~i),           // Save the state for next rule
+        !InitiatorEphemeralKey(~i)            // Save ephemeral key for later reveal
+      ]
+
+  rule 2_Responder:
+      let 
+        g_r = 'g' ^ ~r        
+        k   = g_i ^ ~r                            // Symmetric encryption key (g^b^a = g^(b * a))
+      in
+      [ 
+        In(rUser),
+        In(g_i),                                  // Receive initiator half key
+        Fr(~r)                                    // Generate responder ephemeral key
+      ]
+    --[ 
+        /*
+         * Ensure that the initiator is either $Alice or $Bob
+         */
+        ChoosePrincipal(rUser, $Alice, $Bob)
+      ]->
+      [ 
+        Out(g_r),                                 // Send out half key
+        ResponderState_2(rUser, ~r, g_i, k),
+        !ResponderEphemeralKey(~r)                // Save ephemeral key for later reveal
+      ]
+
+  rule 3_Initiator:
+      let
+          k = g_r ^ ~i            // Symmetric encryption key (g^a^b = g^(ab))
+      in
+      [ 
+        InitatorState_1(iUser, ~i),   // Save the state for next rule
+        In(g_r)                       // Receive Q's half key
+      ]
+    -->
+      [ InitatorState_3(iUser, ~i, g_r, k) ]
+
+/********************************************************************************/
+/* Sending/Receiving a message                                                  */
+/********************************************************************************/
+
+  rule 4_Initiator:
+      [
+        Fr(~m),
+        InitatorState_3(iUser, ~i, g_r, k)
+      ]
+    --[ SentMessage(iUser, ~i, k, ~m) ]->
+      [
+        Out(senc(~m, k))
+      ]
+
+  rule 5_Responder:
+      [
+        ResponderState_2(rUser, ~r, g_i, k),
+        In(senc(~m, k))
+      ]
+    --[ ReceivedMessage(rUser, ~r, k, ~m) ]->
+      []
+    
+/********************************************************************************/
+/* Restrictions                                                                 */
+/********************************************************************************/
+
+  restriction RestrictionChoosePrincipal:
+    "
+      ∀ X Y Z #i. 
+        ChoosePrincipal(X, Y, Z) @i 
+        ==> 
+        (
+          X = Y ∨
+          X = Z
+        )
+    "
+
+/********************************************************************************/
+/* Additional attacker capabilities                                             */
+/********************************************************************************/
+
+  rule RevealInitiatorEphemeralKey:
+      [ !InitiatorEphemeralKey(~i) ]
+    --[ RevealedInitiatorEphemeralKey(~i) ]->
+      [ Out(~i) ]
+
+  rule RevealResponderEphemeralKey:
+      [ !ResponderEphemeralKey(~r) ]
+    --[ RevealedResponderEphemeralKey(~r) ]->
+      [ Out(~r) ]
+
+/********************************************************************************/
+/* Debug lemmas                                                                 */
+/********************************************************************************/
+
+  lemma DebugSentMessage:
+    exists-trace
+    "
+      ∃ iUser i k m #t.
+        SentMessage(iUser, i, k, m) @t
+    "
+
+  lemma DebugReceivedMessage:
+    exists-trace
+    "
+      ∃ rUser r k m #t.
+        ReceivedMessage(rUser, r, k, m) @t
+    "
+
+/********************************************************************************/
+/* Security properties lemmas                                                   */
+/********************************************************************************/
+
+//  lemma InjectiveAgreement:
+//    "
+//      /* Whenever an agent rUser receives a message m sent by sUser with key k */
+//      ∀ rUser r k m #i.
+//      ReceivedMessage(rUser, r, k, m) @i ∧
+//
+//      /* and no secret was revealed */
+//      ¬(∃ x #r. RevealedInitiatorEphemeralKey(x) @r) ∧
+//      ¬(∃ x #r. RevealedResponderEphemeralKey(x) @r)
+//      ==>
+//      /* there is somebody who've sent it with the same key k */
+//      ( 
+//          ∃ i iUser #j1.
+//          SentMessage(iUser, i, k, m) @j1 ∧
+//
+//          /* and there is actually no one else (injectivity) */
+//          ¬(
+//            ∃ #j2.
+//              SentMessage(iUser, i, k, m) @j2 ∧ 
+//              ¬( #j1 = #j2 )
+//          )
+//      )
+//    "
+
+  lemma Agreement:
+    "
+      /* Whenever an agent rUser receives a message m sent by sUser with key k */
+      ∀ rUser r k m #i.
+      ReceivedMessage(rUser, r, k, m) @i ∧
+
+      /* and no secret was revealed */
+      ¬(∃ x #r. RevealedInitiatorEphemeralKey(x) @r) ∧
+      ¬(∃ x #r. RevealedResponderEphemeralKey(x) @r)
+      ==>
+      /* there is somebody who've sent it with the same key k */
+      ( 
+        ∃ iUser i #j.
+        SentMessage(iUser, i, k, m) @j
+      )
+    "
+
+  lemma Secrecy1:
+    "
+      ∀ iUser rUser i r k m #i #j #x.
+      /* Whenever two agents have exchanged a message */
+      SentMessage(iUser, i, k, m) @j ∧
+      ReceivedMessage(rUser, r, k, m) @i ∧
+
+      /* but the attacker knows it */
+      K(m) @x
+      ==>
+      /* then there must have been a reveal */
+      (
+        (∃ #r. RevealedInitiatorEphemeralKey(i) @r) ∨
+        (∃ #r. RevealedResponderEphemeralKey(r) @r)
+      )
+    "
+
+end
