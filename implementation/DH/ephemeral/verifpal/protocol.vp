@@ -1,0 +1,72 @@
+// First of all, we define the type of attacker.
+// It can be passive or active. Differences between the two is the same as usual.
+attacker[active]
+
+principal Client [
+
+    knows private m2    // Message client -> server
+    knows public StoC
+    knows public CtoS
+
+    generates c         // Generates client ephemeral key
+    g_c = G^c           // Computes half key
+]
+
+principal Server [
+    knows private m1    // Message server -> client
+    knows public StoC
+    knows public CtoS
+
+    generates s         // Generate server ephemeral key
+    g_s = G^s           // Compute half key
+]
+
+// Sends the half key to the Server
+Client -> Server: g_c
+
+principal Server [
+    k_cs = g_c ^ s              // Compute the encryption key
+
+    msg1_s = CONCAT(StoC, m1)   // Concatenate message
+    c1     = ENC(k_cs, msg1_s)  // Encrypt message for the client
+]
+
+// Send half key and encrypted message to the client
+Server -> Client: [g_s], c1 // <---- g_s is considered authenticated! 
+
+principal Client [
+    k_sc = g_s ^ c                  // Compute encryption key
+
+    msg1_c = DEC(k_sc, c1)          // Decrypt message
+    StoC_c, m1_c = SPLIT(msg1_c)?   // Split into its components, fail otherwise
+    _ = ASSERT(StoC_c, StoC)?       // Check we're not receiving the Client message
+
+    msg2_c = CONCAT(CtoS, m2)
+    c2     = ENC(k_sc, msg2_c)      // Encrypt message for the server
+]
+
+// Send the encrypted message to the server
+Client -> Server: c2
+
+principal Server [
+    msg2_s = DEC(k_cs, c2)          // Decrypt message
+    CtoS_s, m2_s = SPLIT(msg2_s)?
+    _ = ASSERT(CtoS_s, CtoS)?       // Check we're not receiving the Server message
+]
+
+queries [
+    // Check that messages can actually be sent out
+    confidentiality? c1
+    confidentiality? c2
+
+    // Key agreement
+    equivalence? k_cs, k_sc
+
+    // Secrecy
+    confidentiality? m1
+    confidentiality? m2
+
+    // Authentication
+    authentication? Client -> Server: g_c
+    authentication? Server -> Client: g_s
+]

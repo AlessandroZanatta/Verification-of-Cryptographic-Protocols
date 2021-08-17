@@ -1,0 +1,205 @@
+/*
+ * Anonymous Diffie-Hellman
+ */
+theory DiffieHellman
+
+begin
+  builtins: diffie-hellman, symmetric-encryption
+
+
+/********************************************************************************/
+/* Channel rules for certificate exchange                                       */
+/********************************************************************************/
+
+  /*
+   * Simulates a certificate exchange. 
+   * The term x here cannot be changed by the adversary, but we have to make sure
+   * that we provide x to the adversary.
+   */
+  rule CertificateIn:
+      [ CertificateOut(x) ]
+    -->
+      [ CertificateIn(x), Out(x) ]
+
+/********************************************************************************/
+/* Protocol implementation                                                      */
+/********************************************************************************/
+
+  rule 1_Client:
+      [ Fr(~c) ]                    // Generate a fresh value for the client's ephemeral key
+    -->
+      [ 
+        Out('g' ^ ~c),              // Output the half key of the client
+        InitatorState_1(~c)         // Save the state for next rule
+      ]
+
+  rule 2_Server:
+      let
+        g_s = 'g' ^ ~s
+        k   = g_c ^ ~s              // Symmetric encryption key (g^r^i = g^(r * i))
+      in
+      [ 
+        In(g_c),                    // Receive client half key
+        Fr(~s)                      // Generate server ephemeral key
+      ]
+    --[ ServerAcceptsKey(~s, k) ]->
+      [ 
+        CertificateOut(g_s),        // Send out half key
+        !ServerKey(k)               // Persistent fact to record the established server key
+      ]
+
+  rule 3_Client:
+      let
+        k = g_s ^ ~c                // Symmetric encryption key (g^a^b = g^(ab))
+      in
+      [ 
+        InitatorState_1(~c),        // Save the state for next rule
+        CertificateIn(g_s)          // Receive Q's half key
+      ]
+    --[ ClientAcceptsKey(~c, k) ]->
+      [ 
+        !ClientKey(k)               // Persistent fact to record the established client key
+      ]
+
+/********************************************************************************/
+/* Sending/Receiving a message                                                  */
+/********************************************************************************/
+
+  /* Send a message from client to server */
+  rule ClientSendMessage:
+      [
+        Fr(~m),
+        !ClientKey(k)
+      ]
+    --[ ClientSentMessage(k, ~m) ]->
+      [ Out(senc(<'CtoS', ~m>, k)) ]
+
+  /* Receieve a message from client to server */
+  rule ServerReceiveMessage:
+      [
+        !ServerKey(k),
+        In(senc(<'CtoS', ~m>, k))
+      ]
+    --[ ServerReceivedMessage(k, ~m) ]->
+      []
+
+
+  /* Send a message from server to client */
+  rule ServerSendMessage:
+      [
+        Fr(~m),
+        !ServerKey(k)
+      ]
+    --[ ServerSentMessage(k, ~m) ]->
+      [ Out(senc(<'StoC', ~m>, k)) ]
+
+  /* Receieve a message from server to client */
+  rule ClientReceiveMessage:
+      [
+        !ClientKey(k),
+        In(senc(<'StoC', ~m>, k))
+      ]
+    --[ ClientReceivedMessage(k, ~m) ]->
+      []
+
+/********************************************************************************/
+/* Debug lemmas                                                                 */
+/********************************************************************************/
+
+  lemma DebugClientSentMessage:
+    exists-trace
+    "
+      ∃ k m #t.
+        ClientSentMessage(k, m) @t
+    "
+
+  lemma DebugServerReceivedMessage:
+    exists-trace
+    "
+      ∃ k m #t.
+        ServerReceivedMessage(k, m) @t
+    "
+
+  lemma DebugServerSentMessage:
+    exists-trace
+    "
+      ∃ k m #t.
+        ServerSentMessage(k, m) @t
+    "
+
+  lemma DebugClientReceivedMessage:
+    exists-trace
+    "
+      ∃ k m #t.
+        ClientReceivedMessage(k, m) @t
+    "
+
+/********************************************************************************/
+/* Security properties lemmas                                                   */
+/********************************************************************************/
+
+  /*
+   * Expected result: False
+   */
+  lemma KeyAgreement:
+    "
+      ∀ i r k1 k2 #i #j.
+        ClientAcceptsKey(i, k1) @i ∧
+        ServerAcceptsKey(r, k2) @j
+        ==>
+        k1 = k2
+    "
+
+  /*
+   * Expected result: True
+   */
+  lemma SecrecyClientToServer:
+    "
+      ∀ k m #i.
+      /* Whenever a client sends a message */
+      ClientSentMessage(k, m) @i
+      ==>
+      /* then the attacker does not know it */
+      ¬(∃ #x. K(m) @x)
+    "
+
+  /*
+   * Expected result: False
+   */
+  lemma SecrecyServerToClient:
+    "
+      ∀ k m #i.
+      /* Whenever a server sends a message */
+      ServerSentMessage(k, m) @i
+      ==>
+      /* then the attacker does not know it */
+      ¬(∃ #x. K(m) @x)
+    "
+
+  /*
+   * Expected result: False
+   */
+  lemma ClientAuthentication:
+    "
+      ∀ k1 m #i.
+      /* Whenever the server receives a message */
+      ServerReceivedMessage(k1, m) @i
+      ==>
+      /* then it was the honest client who sent it  */
+      (∃ k2 #j. ClientSentMessage(k2, m) @j)
+    "
+
+  /*
+   * Expected result: True
+   */
+  lemma ServerAuthentication:
+    "
+      ∀ k1 m #i.
+      /* Whenever the server receives a message */
+      ClientReceivedMessage(k1, m) @i
+      ==>
+      /* then it was the honest client who sent it  */
+      (∃ k2 #j. ServerSentMessage(k2, m) @j)
+    "
+
+end
