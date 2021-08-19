@@ -27,7 +27,7 @@ begin
         In(g_c),                    // Receive client half key
         Fr(~s)                      // Generate server ephemeral key
       ]
-    --[ ServerAcceptsKey(~s, k) ]->
+    --[ ServerAcceptedKey(~s, k) ]->
       [ 
         Out(g_s),                   // Send out half key
         !ServerKey(k)               // Persistent fact to record the established server key
@@ -41,7 +41,7 @@ begin
         InitatorState_1(~c),        // Save the state for next rule
         In(g_s)                     // Receive Q's half key
       ]
-    --[ ClientAcceptsKey(~c, k) ]->
+    --[ ClientAcceptedKey(~c, k) ]->
       [ 
         !ClientKey(k)               // Persistent fact to record the established client key
       ]
@@ -129,8 +129,8 @@ begin
   lemma KeyAgreement:
     "
       ∀ i r k1 k2 #i #j.
-        ClientAcceptsKey(i, k1) @i ∧
-        ServerAcceptsKey(r, k2) @j
+        ClientAcceptedKey(i, k1) @i ∧
+        ServerAcceptedKey(r, k2) @j
         ==>
         k1 = k2
     "

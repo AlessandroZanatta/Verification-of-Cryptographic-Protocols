@@ -67,6 +67,6 @@ queries [
     confidentiality? m2
 
     // Authentication
-    authentication? Client -> Server: g_c
-    authentication? Server -> Client: g_s
+    authentication? Server -> Client: c1
+    authentication? Client -> Server: c2
 ]

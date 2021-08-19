@@ -42,7 +42,7 @@ begin
         In(g_c),                    // Receive client half key
         Fr(~s)                      // Generate server ephemeral key
       ]
-    --[ ServerAcceptsKey(~s, k) ]->
+    --[ ServerAcceptedKey(~s, k) ]->
       [ 
         CertificateOut(g_s),        // Send out half key
         !ServerKey(k)               // Persistent fact to record the established server key
@@ -56,7 +56,7 @@ begin
         InitatorState_1(~c),        // Save the state for next rule
         CertificateIn(g_s)          // Receive Q's half key
       ]
-    --[ ClientAcceptsKey(~c, k) ]->
+    --[ ClientAcceptedKey(~c, k) ]->
       [ 
         !ClientKey(k)               // Persistent fact to record the established client key
       ]
@@ -144,8 +144,8 @@ begin
   lemma KeyAgreement:
     "
       ∀ i r k1 k2 #i #j.
-        ClientAcceptsKey(i, k1) @i ∧
-        ServerAcceptsKey(r, k2) @j
+        ClientAcceptedKey(i, k1) @i ∧
+        ServerAcceptedKey(r, k2) @j
         ==>
         k1 = k2
     "
@@ -185,7 +185,7 @@ begin
       /* Whenever the server receives a message */
       ServerReceivedMessage(k1, m) @i
       ==>
-      /* then it was the honest client who sent it  */
+      /* then it was the honest client who sent it */
       (∃ k2 #j. ClientSentMessage(k2, m) @j)
     "
 
