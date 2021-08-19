@@ -1,0 +1,45 @@
+% Section 4
+% 2021-08-19
+% Alessandro Zanatta
+
+\section{Features comparison}
+\label{section:features-comparison}
+
+\comment{
+Tamarin
+    Pros:
+        - More expressive formulas for security properties
+        - Sound and complete
+        - Can prove observational equivalence
+        - Possibility of manually guiding the proof when heuristics fail to do so automagically
+        - Can model many algebraic properties of groups for DH key exchanges (comes with higher computational cost!)
+        - Can model xor and elliptic curve operations
+        - Supports user defined equational theories
+    Cons:
+        - Probably harder to model
+        - Slower (do benchmarks!!)
+
+
+Proverif
+    Pros:
+        - Long history
+        - Can prove observational equivalence
+        - Supports user defined equational theories
+    Cons:
+        - Uses an old-style syntax
+        - CANNOT model many algebraic properties of groups for DH key exchanges (only commutativity)
+
+
+Verifpal
+    Pros:
+        - Very simple to use (both model specification and queries), while being expressive enough for most use cases
+        - Possibility to translate to proverif/coq (even though its limited)
+        - Very intuitive language
+    Cons:
+        - There may be queries that CANNOT be expressed (try finding a counterexample!)
+        - CANNOT prove observational equivalence
+        - It's very recent, still in beta
+        - CANNOT model many algebraic properties of groups for DH key exchanges (only commutativity ???)
+        - does NOT support user-defined equational theories
+
+}

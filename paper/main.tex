@@ -1,0 +1,106 @@
+% Main document
+% 2021-08-19
+% Alessandro Zanatta
+
+% ---------------------------- %
+% Preamble - included packages %
+% ---------------------------- %
+
+
+\documentclass[a4paper,11pt]{article} % Add option 'twoside' only if this document needs to be printed
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel} % Language (last is default)
+\usepackage[hidelinks]{hyperref} % Hide red border around links
+\usepackage{FiraMono}
+\usepackage[euler]{textgreek} % Greek letters in text mode
+\usepackage{pifont} % Cute crossmark and xmark
+\usepackage{enumerate} % Lists with particular numbering
+\usepackage{authblk} % Authors affiliations
+\usepackage{graphicx} % Images
+\graphicspath{{logos/},{images/}} % Images folder(s)
+\usepackage{float} % Image positioning
+\usepackage{tikz}
+\usetikzlibrary{fit,positioning} % Powerful boxes and positioning system for tikz
+\usepackage{color} % Colors (for listings)
+\usepackage{footmisc} % Different referrals to same footnote
+\usepackage{url} % Cool URLs
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm} % Proofs
+\usepackage{listings} % Listings
+\usepackage{boldline} % Thickness of table lines
+\usepackage{multirow} % Text of a table cell on multiple rows
+\usepackage{longtable} % Tables that span multiple pages
+\usepackage{rotating} % Text rotations
+\usepackage[fixlanguage]{babelbib} % Bibliography
+\bibliographystyle{babplain-fl}
+\usepackage[nottoc,notlot,notlof]{tocbibind}
+\usepackage{lipsum}
+
+% Authors in italian
+\renewcommand\Authsep{, }
+\renewcommand\Authand{ e }
+\renewcommand\Authands{ e }
+
+% Style
+\setcounter{tocdepth}{2} % ToC max depth
+
+% Theorems
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section] % Theorem
+\newtheorem{lemma}[theorem]{Lemma} % Lemma
+\newtheorem{corollary}{Corollary}[theorem] % Corollary
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition} % Definition
+\newtheorem{example}[theorem]{Example} % Example
+
+% Short names and commands
+\newcommand{\email}[1]{\href{mailto:#1}{\footnotesize\texttt{#1}}} % Email
+\newcommand{\e}[1]{\times 10^{#1}} % Scientific notation
+\newcommand{\cmark}{\ding{51}} % Checkmark
+\newcommand{\xmark}{\ding{55}} % Xmark
+
+% Comments
+\newcommand{\comment}[1]{}
+
+% ------------------ %
+% Customizable stuff %
+% ------------------ %
+
+% Thesis title and metadata
+\def\thetitle{Comparison of Tools for the Verification of Cryptographic Protocols}
+\def\subtitle{A practical exploratory approach to three different tools: Proverif, Tamarin-prover and Verifpal}
+\author[a]{Alessandro Zanatta}
+\renewcommand\Affilfont{\small}
+\def\uni{University\\of Udine} % University name
+\def\course{Computer Network Security} % Course name
+\def\ay{2020/21} % Academic year
+
+% Document
+\begin{document}
+
+    % Title
+    \input{titlesec}
+
+    % Abstract
+    \input{sections/abstract}
+
+    % Table of contents
+    \tableofcontents
+
+    % Body
+    \newpage
+    \input{sections/01_section}\clearpage
+    \input{sections/02_section}\clearpage
+    \input{sections/03_section}\clearpage
+    \input{sections/04_section}\clearpage
+    \input{sections/conclusions}\clearpage
+    
+    % Bibliography
+    \bibliography{references}
+    \nocite{*} % Print all bibliography references
+
+\end{document}
