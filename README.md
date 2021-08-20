@@ -1,4 +1,4 @@
-# Proverif vs. Tamarin-prover vs. Verifpal
+# Comparison of Tools for the Verification of Cryptographic Protocols
 
 This repository is about the final essay for the Computer Network Security master degree course I attended as a Bachelor student.
 
