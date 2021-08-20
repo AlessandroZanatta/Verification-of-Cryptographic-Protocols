@@ -2,12 +2,100 @@
 % 20/05/2021
 % Alessandro Zanatta
 
-% http://bib-it.sourceforge.net/help/fieldsAndEntryTypes.php
-
-@article{EX:21,
-    author = {Author},
-    title = {Title},
-    journal = {Journal},
-    year = {2021},
-    language = {english}
+@misc{TLSv1.3_specs,
+    title={The Transport Layer Security (TLS) Protocol Version 1.3},
+    howpublished = {\url{https://tlswg.org/tls13-spec/draft-ietf-tls-rfc8446bis.html}},
+    note = {Accessed: 2021-08-20}
 }
+@inproceedings{SymbolicComputationalBlanchet,
+        title        = {Security Protocol Verification: Symbolic and Computational Models},
+        author       = {Blanchet, Bruno},
+        year         = 2012,
+        booktitle    = {Principles of Security and Trust},
+        publisher    = {Springer Berlin Heidelberg},
+        address      = {Berlin, Heidelberg},
+        pages        = {3--29},
+        isbn         = {978-3-642-28641-4},
+        editor       = {Degano, Pierpaolo and Guttman, Joshua D.}
+}
+
+@InProceedings{NSPK_LoweGavin,
+author="Lowe, Gavin",
+editor="Margaria, Tiziana
+and Steffen, Bernhard",
+title="Breaking and fixing the Needham-Schroeder Public-Key Protocol using FDR",
+booktitle="Tools and Algorithms for the Construction and Analysis of Systems",
+year="1996",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="147--166",
+abstract="In this paper we analyse the well known Needham-Schroeder Public-Key Protocol using FDR, a refinement checker for CSP. We use FDR to discover an attack upon the protocol, which allows an intruder to impersonate another agent. We adapt the protocol, and then use FDR to show that the new protocol is secure, at least for a small system. Finally we prove a result which tells us that if this small system is secure, then so is a system of arbitrary size.",
+isbn="978-3-540-49874-2"
+}
+
+@article{NSPK,
+author = {Needham, Roger M. and Schroeder, Michael D.},
+title = {Using Encryption for Authentication in Large Networks of Computers},
+year = {1978},
+issue_date = {Dec. 1978},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {21},
+number = {12},
+issn = {0001-0782},
+url = {https://doi.org/10.1145/359657.359659},
+doi = {10.1145/359657.359659},
+abstract = {Use of encryption to achieve authenticated communication in computer networks is discussed.
+Example protocols are presented for the establishment of authenticated connections,
+for the management of authenticated mail, and for signature verification and document
+integrity guarantee. Both conventional and public-key encryption algorithms are considered
+as the basis for protocols.},
+journal = {Commun. ACM},
+month = dec,
+pages = {993–999},
+numpages = {7},
+keywords = {protocols, authentication, encryption, public-key cryptosystems, data encryption standard, security, networks}
+}
+
+@misc{Telegram-MTProto2.0,
+    title        = {MTProto Mobile Protocol},
+    author       = {Telegram},
+    howpublished = {\url{https://core.telegram.org/mtproto/}},
+    note = {Accessed: 2021-08-20}
+}
+
+@misc{Signal,
+    title  = {Signal specification},
+    author = {Signal team},
+    howpublished = {\url{https://signal.org/docs/}},
+    note = {Accessed: 2021-08-20}
+}
+
+@ARTICLE{Dolev-Yao,  author={Dolev, D. and Yao, A.},  journal={IEEE Transactions on Information Theory},   title={On the security of public key protocols},   year={1983},  volume={29},  number={2},  pages={198-208},  doi={10.1109/TIT.1983.1056650}}
+
+@article{ReconcilingComputationalSymbolic,
+        title        = {Reconciling Two Views of Cryptography (The Computational Soundness of Formal Encryption)},
+        author       = {Martín Abadi and Phillip Rogaway},
+        year         = 2007,
+        journal      = {J. Cryptology},
+        volume       = 20,
+        pages        = 395,
+        doi          = {10.1007/s00145-007-0203-0}
+}
+
+@InProceedings{10.1007/978-3-540-31987-0_12,
+author="Cortier, V{\'e}ronique
+and Warinschi, Bogdan",
+editor="Sagiv, Mooly",
+title="Computationally Sound, Automated Proofs for Security Protocols",
+booktitle="Programming Languages and Systems",
+year="2005",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="157--171",
+abstract="Since the 1980s, two approaches have been developed for analyzing security protocols. One of the approaches relies on a computational model that considers issues of complexity and probability. This approach captures a strong notion of security, guaranteed against all probabilistic polynomial-time attacks. The other approach relies on a symbolic model of protocol executions in which cryptographic primitives are treated as black boxes. Since the seminal work of Dolev and Yao, it has been realized that this latter approach enables significantly simpler and often automated proofs. However, the guarantees that it offers have been quite unclear.",
+isbn="978-3-540-31987-0"
+}
+
+
+

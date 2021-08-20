@@ -12,19 +12,12 @@
 \usepackage[T1]{fontenc}
 \usepackage[english]{babel} % Language (last is default)
 \usepackage[hidelinks]{hyperref} % Hide red border around links
-\usepackage{FiraMono}
-\usepackage[euler]{textgreek} % Greek letters in text mode
-\usepackage{pifont} % Cute crossmark and xmark
-\usepackage{enumerate} % Lists with particular numbering
+% \usepackage{FiraMono}
 \usepackage{authblk} % Authors affiliations
 \usepackage{graphicx} % Images
+\usepackage{url}
 \graphicspath{{logos/},{images/}} % Images folder(s)
 \usepackage{float} % Image positioning
-\usepackage{tikz}
-\usetikzlibrary{fit,positioning} % Powerful boxes and positioning system for tikz
-\usepackage{color} % Colors (for listings)
-\usepackage{footmisc} % Different referrals to same footnote
-\usepackage{url} % Cool URLs
 \usepackage{mathtools}
 \usepackage{amsfonts}
 \usepackage{amsmath}
@@ -38,7 +31,8 @@
 \usepackage[fixlanguage]{babelbib} % Bibliography
 \bibliographystyle{babplain-fl}
 \usepackage[nottoc,notlot,notlof]{tocbibind}
-\usepackage{lipsum}
+\usepackage{cleveref}
+\usepackage{afterpage}
 
 % Authors in italian
 \renewcommand\Authsep{, }
@@ -101,6 +95,6 @@
     
     % Bibliography
     \bibliography{references}
-    \nocite{*} % Print all bibliography references
+ % Print all bibliography references
 
 \end{document}
