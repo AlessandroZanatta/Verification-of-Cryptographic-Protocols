@@ -54,6 +54,20 @@ principal Server [
     _ = ASSERT(CtoS_s, CtoS)?       // Check we're not receiving the Server message
 ]
 
+// Actions specified from now on are executed only AFTER actions above
+phase[1]
+
+// The client leaks (i.e. reveals) his ephemeral key to the attacker
+principal Client [
+    leaks c
+]
+
+// The server leaks (i.e. reveals) his ephemeral key to the attacker
+principal Server [
+    leaks s
+]
+
+
 queries [
     // Check that messages can actually be sent out
     confidentiality? c1                         // False
@@ -64,7 +78,7 @@ queries [
 
     // Secrecy
     confidentiality? m1                         // False
-    confidentiality? m2                         // True
+    confidentiality? m2                         // False
 
     // Authentication
     authentication? Server -> Client: c1        // True

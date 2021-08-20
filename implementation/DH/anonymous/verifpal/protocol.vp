@@ -56,17 +56,17 @@ principal Server [
 
 queries [
     // Check that messages can actually be sent out
-    confidentiality? c1
-    confidentiality? c2
+    confidentiality? c1                         // False
+    confidentiality? c2                         // False
 
     // Key agreement
-    equivalence? k_cs, k_sc
+    equivalence? k_cs, k_sc                     // False
 
     // Secrecy
-    confidentiality? m1
-    confidentiality? m2
+    confidentiality? m1                         // False
+    confidentiality? m2                         // False
 
     // Authentication
-    authentication? Server -> Client: c1
-    authentication? Client -> Server: c2
+    authentication? Server -> Client: c1        // False
+    authentication? Client -> Server: c2        // False
 ]
