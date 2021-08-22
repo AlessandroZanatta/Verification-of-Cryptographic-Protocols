@@ -1,0 +1,72 @@
+attacker [active]
+
+// First of all, generate private and public keys
+principal Alice [
+    knows public A, B
+    generates NA, K_SA
+    
+    K_PA = G^K_SA // Compute public key
+]
+
+principal Bob [
+    knows public A, B
+    generates NB, K_SB
+
+    K_PB = G^K_SB // Compute public key
+]
+
+// NOTE: only the exchange from Alice to Bob is guarded. This models the case in which Alice is willing to start a run of the protocol with anyone, including - possibly - the attacker.
+
+// We need to share Alice and Bob public key with each other
+Alice -> Bob: [K_PA]
+Bob -> Alice: K_PB
+
+//-----------------------//
+// Start of the protocol //
+//-----------------------//
+
+principal Alice [
+    c1 = PKE_ENC(K_PB, NA)
+]
+
+// Send nonce NA
+Alice -> Bob: c1
+
+principal Bob [
+    B_NA = PKE_DEC(K_SB, c1)
+
+    c2 = PKE_ENC(K_PA, CONCAT(B_NA, NB))
+]
+
+// Send nonce NA and NB
+Bob -> Alice: c2
+
+principal Alice [
+    A_NA, A_NB = SPLIT(PKE_DEC(K_SA, c2))?
+    _ = ASSERT(A_NA, NA)? // Check that the received nonce NA is correct
+    
+    c3 = PKE_ENC(K_PB, A_NB)
+]
+
+// Send nonce NB
+Alice -> Bob: c3
+
+principal Bob [
+    B_NB = PKE_DEC(K_SB, c3)
+    _ = ASSERT(B_NB, NB)? // Check that the received nonce NB is correct
+]
+
+queries [
+    // Reachability queries
+    confidentiality? c1
+    confidentiality? c2
+    confidentiality? c3
+
+    // Authentication
+	authentication? Bob -> Alice: c2
+	authentication? Alice -> Bob: c3
+
+    // Secrecy of nonces should be true as long as private keys are kept secret
+    confidentiality? NA
+    confidentiality? NB
+]

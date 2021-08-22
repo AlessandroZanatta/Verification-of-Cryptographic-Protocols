@@ -1,0 +1,234 @@
+(*
+ * Anonymous Diffie-Hellman
+ *)
+
+(* set preciseActions = true. *)
+
+(********************************************************************************)
+(* Types definitions                                                            *)
+(********************************************************************************)
+
+(* Principals *)
+type Principal.
+
+const Alice: Principal.
+const Bob: Principal.
+
+(* Nonces *)
+type Nonce.
+
+(* Types for encryption *)
+type Ciphertext.
+type PublicKey.
+type PrivateKey.
+
+(* Type converters *)
+fun nonce2bit(Nonce): bitstring [typeConverter].
+fun bit2nonce(bitstring): Nonce [typeConverter].
+
+(********************************************************************************)
+(* Asymmetric encryption definitions                                            *)
+(********************************************************************************)
+
+(* Public key derivation function *)
+fun pk(PrivateKey): PublicKey.
+
+(* Asymmetric encryption *)
+fun aenc(bitstring, PublicKey): Ciphertext.
+
+(* Asymmetric decryption *)
+reduc forall m: bitstring, sk: PrivateKey;
+    adec(aenc(m, pk(sk)), sk) = m.
+
+
+(********************************************************************************)
+(* Principals functions                                                         *)
+(********************************************************************************)
+
+fun choosePrincipal(Principal, Principal, Principal): Principal
+    reduc forall X: Principal, Y: Principal; choosePrincipal(X,X,Y) = X
+    otherwise forall X: Principal, Y: Principal; choosePrincipal(Y,X,Y) = Y.
+
+fun chooseOtherPrincipal(Principal, Principal, Principal): Principal
+    reduc forall X, Y: Principal; chooseOtherPrincipal(X,X,Y) = Y
+    otherwise forall X,Y: Principal; chooseOtherPrincipal(X,Y,X) = Y.
+
+(********************************************************************************)
+(* Tables definitions                                                           *)
+(********************************************************************************)
+
+table PublicKeyTable(Principal, PublicKey).
+table PrivateKeyTable(Principal, PrivateKey).
+
+(********************************************************************************)
+(* Events and and queries definition                                            *)
+(********************************************************************************)
+
+event InitiatorSendsNonce(Principal, Principal, Nonce).
+event InitiatorReceivesNonce(Principal, Principal, Nonce, Nonce).
+event InitiatorSendsAck(Principal, Principal, Nonce, Nonce).
+event InitiatorAcceptsSecretNonces(Nonce, Nonce).
+
+event ResponderReceivesNonce(Principal, Principal, Nonce).
+event ResponderSendsNonce(Principal, Principal, Nonce, Nonce).
+event ResponderReceivesAck(Principal, Principal, Nonce, Nonce).
+event ResponderAcceptsSecretNonces(Nonce, Nonce).
+
+event AttackerRegistersKeypair(Principal, PrivateKey).
+
+(************************)
+(* Reachability queries *)
+(************************)
+query I, R: Principal, ni: Nonce; event(InitiatorSendsNonce(I, R, ni)).
+query I, R: Principal, ni, nr: Nonce; event(InitiatorReceivesNonce(I, R, ni, nr)).
+query I, R: Principal, ni, nr: Nonce; event(InitiatorSendsAck(I, R, ni, nr)).
+query ni, nr: Nonce; event(InitiatorAcceptsSecretNonces(ni, nr)).
+
+query I, R: Principal, ni: Nonce; event(ResponderReceivesNonce(I, R, ni)).
+query I, R: Principal, ni, nr: Nonce; event(ResponderSendsNonce(I, R, ni, nr)).
+query I, R: Principal, ni, nr: Nonce; event(ResponderReceivesAck(I, R, ni, nr)).
+query ni, nr: Nonce; event(ResponderAcceptsSecretNonces(ni, nr)).
+
+query X: Principal, skX: PrivateKey; event(AttackerRegistersKeypair(X, skX)).
+
+(*****************)
+(* Debug queries *)
+(*****************)
+(* query I, R: Principal, ni: Nonce; event(InitiatorSendsNonce(I, R, ni)) ==> R = Alice || R = Bob. *)
+(* query I, R: Principal, ni, nr: Nonce; event(InitiatorReceivesNonce(I, R, ni, nr)) ==> R = Alice || R = Bob. *)
+(* query I, R: Principal, ni, nr: Nonce; event(InitiatorSendsAck(I, R, ni, nr)) ==> R = Alice || R = Bob. *)
+
+(*******************)
+(* Secrecy queries *)
+(*******************)
+
+query ni, nr: Nonce; 
+    event(InitiatorAcceptsSecretNonces(ni, nr)) &&
+    event(ResponderAcceptsSecretNonces(ni, nr)) &&
+    attacker(ni) ==> false.
+
+query ni, nr: Nonce; 
+    event(InitiatorAcceptsSecretNonces(ni, nr)) &&
+    event(ResponderAcceptsSecretNonces(ni, nr)) &&
+    attacker(nr) ==> false.
+
+(**************************)
+(* Authentication queries *)
+(**************************)
+
+(* Initiator to responder *)
+query I, R: Principal, ni, nr: Nonce;
+    inj-event(ResponderReceivesAck(I, R, ni, nr)) ==> inj-event(InitiatorSendsAck(I, R, ni, nr)).
+
+(* Responder to initiator *)
+query I, R: Principal, ni, nr: Nonce;
+    inj-event(InitiatorReceivesNonce(I, R, ni, nr)) ==> inj-event(ResponderSendsNonce(I, R, ni, nr)).
+
+(********************************************************************************)
+(* Channels definitions                                                         *)
+(********************************************************************************)
+channel io.
+
+(********************************************************************************)
+(* Process macros                                                               *)
+(********************************************************************************)
+
+let Init() = 
+    new skA: PrivateKey; let pkA = pk(skA) in out(io, pkA);
+    insert PublicKeyTable(Alice, pkA);
+    insert PrivateKeyTable(Alice, skA);
+
+    new skB: PrivateKey; let pkB = pk(skB) in out(io, pkB);
+    insert PublicKeyTable(Bob, pkB);
+    insert PrivateKeyTable(Bob, skB); 
+    0.
+
+let Initiator() =
+    (* The initiator is willing to start a run of the protocol with anyone. *)
+    in(io, (X: Principal, rUser: Principal));
+
+    (* We only accept honest initiators (which are not also the responder). *)
+    let iUser = choosePrincipal(X, Alice, Bob) in
+    if iUser <> rUser then
+
+        (* Get private key of the initiator and public key of the responder. *)
+        get PrivateKeyTable(=iUser, skI) in
+        get PublicKeyTable(=rUser, pkR) in
+
+        (* Generate initiator nonce *)
+        new ni: Nonce;
+        event InitiatorSendsNonce(iUser, rUser, ni);
+
+        (* Send it to the responder, encrypted with his public key. *)
+        out(io, aenc((ni, iUser), pkR));
+        
+        (* Receive response with nonces. Nonce of the initiator must match. *)
+        in(io, c2: Ciphertext);
+        let (=ni, nr: Nonce, =rUser) = adec(c2, skI) in
+        event InitiatorReceivesNonce(iUser, rUser, ni, nr);
+        event InitiatorSendsAck(iUser, rUser, ni, nr);
+        event InitiatorAcceptsSecretNonces(ni, nr);
+
+        (* Send back the responder nonce. Type conversion is needed as aenc expects a bitstring. *)
+        out(io, aenc(nonce2bit(nr), pkR));
+    0.
+
+let Responder() =
+    (* Get responder identity. Responder is always honest. *)
+    in(io, X: Principal);
+    let rUser = choosePrincipal(X, Alice, Bob) in
+
+    (* And get his private key *)
+    get PrivateKeyTable(=rUser, skR) in
+
+    (* Receive message from initiator, containing nonce and initiator identity. *)
+    in(io, c1: Ciphertext);
+    let (ni: Nonce, iUser: Principal) = adec(c1, skR) in
+
+    (* Responder is willing to start a run ONLY with honest user (Alice or Bob) *)
+    if iUser <> rUser && (iUser = Alice || iUser = Bob) then
+        event ResponderReceivesNonce(iUser, rUser, ni);
+
+        (* Get public key of the initiator *)
+        get PublicKeyTable(=iUser, pkI) in
+
+        (* Generate responder nonce *)
+        new nr: Nonce;
+        event ResponderSendsNonce(iUser, rUser, ni, nr);
+
+        (* Send it to responder, togheter with his nonce ni. *)
+        out(io, aenc((ni, nr, rUser), pkI));
+
+        (* Receive his response, which should contain nr. *)
+        in(io, c3: Ciphertext);
+        let (nr_recv: bitstring) = adec(c3, skR) in
+
+        (* Here a type conversion is needed because you can't check equality on different types. *)
+        if bit2nonce(nr_recv) = nr then
+            event ResponderReceivesAck(iUser, rUser, ni, nr);
+            event ResponderAcceptsSecretNonces(ni, nr);
+    0.
+
+(********************************************************************************)
+(* Additional attacker capabilities                                             *)
+(********************************************************************************)
+
+let RegisterAttackerKey() =
+    in(io, (X: Principal));
+    if X <> Alice && X <> Bob then
+        new skX: PrivateKey;
+        insert PrivateKeyTable(X, skX);
+        insert PublicKeyTable(X, pk(skX));
+        event AttackerRegistersKeypair(X, skX);
+        out(io, skX);
+    0.
+
+(********************************************************************************)
+(* Main process                                                                 *)
+(********************************************************************************)
+
+process
+    Init()
+    | !Responder()
+    | !Initiator()
+    | !RegisterAttackerKey()

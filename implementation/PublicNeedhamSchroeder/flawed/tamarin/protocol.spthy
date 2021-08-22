@@ -1,0 +1,288 @@
+/*
+ * Needham-Schroeder Public-Key
+ */
+
+theory NSPK
+
+begin
+  builtins: asymmetric-encryption
+
+/********************************************************************************/
+/* Public key infrastructure definitions                                        */
+/********************************************************************************/
+
+  /* Register a new key-pair for a principal $X */
+  rule RegisterKey [color=#99C24D]:
+      [ Fr(~sk), In(X) ]
+    --[ Eq(X, 'I', 'R') ]->
+      [ 
+        !PrivateKey(X, ~sk), 
+        !PublicKey(X, pk(~sk)), 
+        Out(pk(~sk)) 
+      ]
+
+/********************************************************************************/
+/* Protocol implementation                                                      */
+/********************************************************************************/
+
+  /*
+   * NOTE: Out_X_Y and In_X_Y action/trace facts are used to create a sources lemma,
+   * which is essential in allowing the termination of the proofs.
+   */
+
+  rule 1_Initiator [color=#41a9a9]:
+    let
+      c1 = aenc(<'1', 'I', ~ni>, pk_R)
+    in
+      [ 
+        /*
+         * This fact models the situation in which the initiator is willing to
+         * start a run of the protocol with anyone - even the attacker.
+         */
+        In(R),
+
+        /* Get public key of responder */
+        !PublicKey(R, pk_R),
+
+        /* Generate initiator's nonce */
+        Fr(~ni)
+      ]
+    --[ Out_I_1(c1) ]->
+      [ 
+        Out(c1),
+        InitiatorState_1('I', R, pk_R, ~ni)
+      ]
+
+  rule 2_Responder [color=#4C6085]:
+    let
+      pk_R = pk(sk_R)
+
+      c1 = aenc(<'1', 'I', ni>, pk_R)
+      c2 = aenc(<'2', ni, ~nr>, pk_I)
+    in
+      [ 
+        /* Get private key of the (honest) responder */
+        !PrivateKey('R', sk_R),
+        In(c1),
+
+        /* Get the public key of the (honest) initiator */
+        !PublicKey('I', pk_I),
+
+        /* Generate responder's nonce */
+        Fr(~nr)
+      ]
+    --[
+        In_R_2(c1, ni),
+        Out_R_2(c2),
+        ResponderSendsNonce('I', 'R', ni, ~nr)
+      ]->
+      [ 
+        Out(c2),
+        ResponderState_2('I', 'R', sk_R, pk_I, ni, ~nr)
+      ]
+
+  rule 3_Initiator [color=#41a9a9]:
+    let
+      pk_I = pk(sk_I)
+
+      c2 = aenc(<'2', ~ni, nr>, pk_I)
+      c3 = aenc(<'3', nr>, pk_R)
+    in
+      [
+        InitiatorState_1(I, R, pk_R, ~ni),
+        
+        /* Get private key of the initiator */
+        !PrivateKey(I, sk_I),
+        In(c2)
+      ]
+    --[ 
+        In_I_3(c2, nr),
+        InitiatorReceivesNonce(I, R, ~ni, nr),
+        InitiatorSendsAck(I, R, ~ni, nr),
+        InitiatorAcceptsSecretNonces(~ni, nr)
+      ]->
+      [ Out(c3) ]
+
+  rule 4_Responder [color=#4C6085]:
+      [ 
+        ResponderState_2(I, R, sk_R, pk_I, ni, ~nr),
+        In(aenc(<'3', ~nr>, pk(sk_R)))
+      ]
+    --[ 
+        ResponderReceivesAck(I, R, ni, ~nr),
+        ResponderAcceptsSecretNonces(ni, ~nr) 
+      ]->
+      []
+
+/********************************************************************************/
+/* Additional attacker capabilities                                             */
+/********************************************************************************/
+
+  /* 
+   * Register a key for an attacker chosen principal (which is not 'I' or 'R').
+   * This is very similar to RegisterKey, with the difference that the private key is
+   * sent to the public channel.
+   */
+  rule RegisterAttackerKey:
+      [ Fr(~sk), In(X) ]
+    --[ NotEq(X, 'I', 'R') ]->
+      [ 
+        !PublicKey(X, pk(~sk)), 
+        !PrivateKey(X, ~sk), 
+        Out(~sk)
+     ]
+
+/********************************************************************************/
+/* Restrictions                                                                 */
+/********************************************************************************/
+
+  restriction RestrictionNotEq:
+    "∀ X Y Z #i. NotEq(X, Y, Z) @i ==> (¬(X = Y) ∧ ¬(X = Z))"
+
+  restriction RestrictionEq:
+    "∀ X Y Z #i. Eq(X, Y, Z) @i ==> ((X = Y) ∨ (X = Z))"
+
+/********************************************************************************/
+/* Source lemma                                                                 */
+/********************************************************************************/
+
+  /*
+   * This is needed in order to prove any security lemma.
+   * This lemma with the [sources] annotation is saying where a certain
+   * must have came from. This simplifies the proofs by a lot.
+   *
+   * You may try to comment this lemma and prove a 
+   */
+  lemma Types [sources]:
+    "
+      (
+        ∀ c1 ni #i.
+          In_R_2(c1, ni) @i
+          ==>
+          (
+            (∃ #j. Out_I_1(c1) @j) ∨
+            (∃ #j. KU(ni) @j ∧ #j < #i)
+          )
+      ) ∧
+      (
+        ∀ c2 nr #i.
+          In_I_3(c2, nr) @i
+          ==>
+          (
+            (∃ #j. Out_R_2(c2) @j) ∨
+            (∃ #j. KU(nr) @j ∧ #j < #i)
+          )
+      )
+    "
+
+/********************************************************************************/
+/* Reachability lemmas                                                          */
+/********************************************************************************/
+
+  lemma DebugResponderSendsNonce:
+    exists-trace
+    "
+      ∃ I R ni nr #i.
+        ResponderSendsNonce(I, R, ni, nr) @i
+    "
+
+  lemma DebugInitiatorReceivesNonce:
+    exists-trace
+    "
+      ∃ I R ni nr #i.
+        InitiatorReceivesNonce(I, R, ni, nr) @i
+    "
+
+  lemma DebugInitiatorSendsAck:
+    exists-trace
+    "
+      ∃ I R ni nr #i.
+        InitiatorSendsAck(I, R, ni, nr) @i
+    "
+
+  lemma DebugInitiatorAcceptsSecretNonces:
+    exists-trace
+    "
+      ∃ ni nr #i.
+        InitiatorAcceptsSecretNonces(ni, nr) @i
+    "
+
+  lemma DebugResponderReceivesAck:
+    exists-trace
+    "
+      ∃ I R ni nr #i.
+        ResponderReceivesAck(I, R, ni, nr) @i
+    "
+
+  lemma DebugResponderAcceptsSecretNonces:
+    exists-trace
+    "
+      ∃ ni nr #i.
+        ResponderAcceptsSecretNonces(ni, nr) @i
+    "
+
+/********************************************************************************/
+/* Security lemmas                                                              */
+/********************************************************************************/
+
+  lemma NoncesSecrecy:
+    "
+      /* It cannot be that*/
+      ¬(
+        ∃ ni nr #i #j.
+          
+          /* Initiator and responder have agreed upon two secret nonces */
+          InitiatorAcceptsSecretNonces(ni, nr) @j ∧
+          ResponderAcceptsSecretNonces(ni, nr) @i ∧
+
+          /* and the attacker knows (at least one of) them */
+          (
+            (∃ #x. K(ni) @x) ∨
+            (∃ #x. K(nr) @x)
+          )
+      )
+    "
+
+  lemma AuthenticationInitiatorToResponder:
+    "
+      ∀ I R ni nr #i.
+        /* Whenever a responder has concluded the protocol run */
+        ResponderReceivesAck(I, R, ni, nr) @i
+        ==>
+        (
+          (
+            ∃ #j.
+              /* it did with an honest initiator */
+              InitiatorSendsAck(I, R, ni, nr) @j ∧
+              
+              /* 
+               * and there actually isn't another instance where the responder
+               * ended the protocol with the same parameters (injectivity)
+               */
+              ¬(∃ I2 R2 #i2. ResponderReceivesAck(I2, R2, ni, nr) @i2 ∧ ¬(#i = #i2) )
+          )
+        )
+    "
+
+  lemma AuthenticationResponderToInitiator:
+    "
+      ∀ I R ni nr #i.
+        /* Whenever an initiator has received the nonce from responder */
+        InitiatorReceivesNonce(I, R, ni, nr) @i
+        ==>
+        (
+          (
+            ∃ #j.
+              /* it did with an honest initiator */
+              ResponderSendsNonce(I, R, ni, nr) @j ∧
+              
+              /* 
+               * and there actually isn't another instance where the initiator
+               * ended the protocol with the same parameters (injectivity)
+               */
+              ¬(∃ I2 R2 #i2. InitiatorReceivesNonce(I2, R2, ni, nr) @i2 ∧ ¬(#i = #i2) )
+          )
+        )
+    "
+
+end
