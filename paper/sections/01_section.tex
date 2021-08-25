@@ -19,9 +19,10 @@ Given the importance of the correctness of such protocols and the difficulties f
     \end{figure}
 }
 
-These tools can be classified as shown in \cref{fig:classification-of-tools}. Two classes of tools can be identified. As the tools we are going to examine exploit the symbolic model, we will not explore the computational model (see \cite{ReconcilingComputationalSymbolic, 10.1007/978-3-540-31987-0_12, SymbolicComputationalBlanchet} for further readings). 
+These tools can be classified as shown in \cref{fig:classification-of-tools}. Two classes of tools can be identified. As the tools we are going to examine exploit the symbolic model, we will not explore the computational model (see \cite{ReconcilingComputationalSymbolic, SymbolicComputationalBlanchet, 10.1007/978-3-540-31987-0_12} for further readings). 
 
-Let us examine briefly the symbolic model. This models assumes a Dolev-Yao \cite{Dolev-Yao} attacker. Moreover, cryptographic primitives are considered as black-box and are represented using function symbols, the messages are terms and the adversary can only use defined primitives. An important aspect to note of this model is that it assumes \textbf{perfect cryptography}. As an example, consider the case in which there are two function symbols (\textbf{enc} and \textbf{dec}, used to encrypt and decrypt), a message \textit{m} and a key \textit{k} and the following equality is defined:
+Let us briefly examine the symbolic model. This model assumes a Dolev-Yao \cite{Dolev-Yao} attacker. Moreover, cryptographic primitives are considered as black-box and are represented using function symbols, the messages are terms and the adversary can only use defined primitives. An important aspect to note of this model is that it assumes \textbf{perfect cryptography}. As an example, consider the case in which there are two function symbols (\textbf{enc} and \textbf{dec}, used to encrypt and decrypt), a message \textit{m} and a key \textit{k} and the following equality is defined:
+
 
 \begin{equation}
 \mbox{dec}\left(\mbox{enc}\left(m, k\right), k\right) = m

@@ -5,6 +5,119 @@
 \section{Case study}
 \label{section:case-study}
 
+The full models of the following examples is freely available \cite{CaseStudies}.
+
 \subsection{Diffie-Hellman key exchange}
 
+\begin{figure}[t]
+    \setmscoptions
+    \begin{msc}{}
+    \setmscscale{.8} 
+    
+    \declinst{client}{}{Client}
+    \declinst{server}{}{Server}
+    
+    \action*{\parbox{4.5cm}{\centering
+        Knows $g, p$\\
+        $c \in \Z$
+        $g_c := g ^ c \mod{p}$
+    }}{client}
+
+    \nextlevel[4]
+    \mess{$g_c$}{client}{server}
+    \nextlevel
+
+    \action*{\parbox{4.5cm}{\centering
+        Knows $g, p$\\
+        $s \in \Z$\\
+        $g_s := g ^ s \mod{p}$\\
+        $K_{sc} := g_c ^ s \mod{p}$
+    }}{server}
+
+    \nextlevel[6]
+    \mess{$g_s$}{server}{client}
+    \nextlevel
+
+    \action*{\parbox{4.5cm}{\centering
+        $K_{cs} := g_s ^ c \mod{p}$
+    }}{client}
+    \nextlevel
+
+    \end{msc}
+    \centering
+    \caption{Diffie-Hellman key exchange protocol}
+    \label{fig:dh-key-exchange}
+\end{figure}
+
+\subsubsection{Anonymous}
+
+\subsubsection{Ephemeral}
+
+\subsubsection{Perfect Forward Secrecy}
+
+
 \subsection{Needham-Schroeder public-key protocol}
+
+\begin{figure}[t]
+    \setmscoptions
+    \begin{msc}{}
+    \setmscscale{.8} 
+    
+    \declinst{alice}{}{Alice}
+    \declinst{server}{}{Server}
+    \declinst{bob}{}{Bob}
+    
+    \action*{\parbox{4.5cm}{\centering
+        Knows $K_{SS}, K_{PS}$\\
+        Knows $K_{PB}, K_{PA}$
+    }}{server}
+
+    \action*{\parbox{4.5cm}{\centering
+        Knows $K_{SA}, K_{PA}$\\
+        Knows $K_{PS}$
+    }}{alice}
+
+    \action*{\parbox{4.5cm}{\centering
+        Knows $K_{SB}, K_{PB}$\\
+        Knows $K_{PS}$
+    }}{bob}
+    \nextlevel[4]
+
+    \mess{$\mbox{A}, \mbox{B}$}{alice}{server}
+    \nextlevel[2]
+    \mess{$\left\{K_{PB}, B\right\}_{K_{SS}}$}{server}{alice}
+    \nextlevel
+
+    \action*{\parbox{4.5cm}{\centering
+        Generates $N_A$
+    }}{alice}
+
+    \nextlevel[3]    
+    \mess[pos=0.75]{$\left\{N_A, A\right\}_{K_{PB}}$}{alice}{bob}
+    \nextlevel[2]
+    \mess{$\mbox{B}, \mbox{A}$}{bob}{server}
+    \nextlevel[2]
+    \mess{$\left\{K_{PA}, A\right\}_{K_{SS}}$}{server}{bob}
+    \nextlevel
+
+
+    \action*{\parbox{4.5cm}{\centering
+        Generates $N_B$
+    }}{bob}
+
+    \nextlevel[2]
+    \mess[pos=0.75]{$\left\{N_A, N_B\right\}_{K_{PA}}$}{bob}{alice}
+    \nextlevel[2]
+    \mess[pos=0.75]{$\left\{N_B\right\}_{K_{PB}}$}{alice}{bob}
+    \nextlevel
+
+    \end{msc}
+
+    \centering
+    \caption{Needham-Schroeder Public-key protocol}
+    \label{fig:NSPK}
+\end{figure}
+
+\subsubsection{Flawed version}
+
+\subsubsection{Fixed version}

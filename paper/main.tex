@@ -31,8 +31,6 @@
 \usepackage[fixlanguage]{babelbib} % Bibliography
 \bibliographystyle{babplain-fl}
 \usepackage[nottoc,notlot,notlof]{tocbibind}
-\usepackage{cleveref}
-\usepackage{afterpage}
 
 % Authors in italian
 \renewcommand\Authsep{, }
@@ -41,6 +39,16 @@
 
 % Style
 \setcounter{tocdepth}{2} % ToC max depth
+
+% ------------------- %
+% Additional packages %
+% ------------------- %
+\usepackage{cleveref}
+\usepackage{afterpage}
+\usepackage{msc}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[euler]{textgreek}
 
 % Theorems
 \theoremstyle{plain}
@@ -57,8 +65,38 @@
 \newcommand{\cmark}{\ding{51}} % Checkmark
 \newcommand{\xmark}{\ding{55}} % Xmark
 
+% ------------------ %
+% ---- Commands ---- %
+% ------------------ %
+
 % Comments
 \newcommand{\comment}[1]{}
+
+% msc options command
+\newcommand\setmscoptions{%
+  \setlength{\instdist}{3cm}%
+  % \setlength{\levelheight}{1.5 \levelheight}%
+  % \setlength{\instwidth}{3cm}
+  \setmsckeyword{}
+  \drawframe{no}
+  \centering
+}
+
+\newcommand*{\Z}{\ensuremath{\mathbb{Z}}}
+
+% msr
+%% Taken from https://hal.inria.fr/file/index/docid/955869/filename/sapic.tex
+\newcommand{\msrewrite}[1]{\mathrel{-\hspace{-2pt}[#1]\hspace{-4pt}\to}}
+\newcommand{\emptyrule}{\ensuremath{[]}\xspace}
+\newcommand{\msr}[3]{\ensuremath{#1 \msrewrite{#2} #3}}
+%% -------------- %%
+
+\newcommand{\msrnolabel}[2]{\ensuremath{#1 \rightarrow #2}}
+\newcommand{\msrsetminus}{\ensuremath{\setminus^\#}}
+\newcommand{\msrcap}{\ensuremath{\cap^\#}}
+\newcommand{\msrcup}{\ensuremath{\cup^\#}}
+\newcommand{\msrin}{\ensuremath{\in^\#}}
+\newcommand{\msrsubseteq}{\ensuremath{\subseteq^\#}}
 
 % ------------------ %
 % Customizable stuff %
@@ -66,7 +104,7 @@
 
 % Thesis title and metadata
 \def\thetitle{Comparison of Tools for the Verification of Cryptographic Protocols}
-\def\subtitle{A practical exploratory approach to three different tools: Proverif, Tamarin-prover and Verifpal}
+\def\subtitle{A practical exploratory approach to three different tools: Tamarin-prover, Verifpal and Proverif}
 \author[a]{Alessandro Zanatta}
 \renewcommand\Affilfont{\small}
 \def\uni{University\\of Udine} % University name
