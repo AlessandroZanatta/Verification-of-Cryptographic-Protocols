@@ -179,9 +179,9 @@ begin
         /* Whenever a client sends a message */
         ClientSentMessage(k, m) @i ∧
 
-        /* and no revealing has happened */
-        ¬(∃ e #x. RevealedClientEphemeralKey(e) @x) ∧
-        ¬(∃ e #x. RevealedServerEphemeralKey(e) @x)
+        /* and no revealing has happened before the message was sent */
+        ¬(∃ e #x. RevealedClientEphemeralKey(e) @x ∧ #x < #i) ∧
+        ¬(∃ e #x. RevealedServerEphemeralKey(e) @x ∧ #x < #i)
         ==>
         /* then the attacker does not know it */
         ¬(∃ #x. K(m) @x)
@@ -196,9 +196,9 @@ begin
         /* Whenever a server sends a message */
         ServerSentMessage(k, m) @i ∧
 
-        /* and no revealing has happened */
-        ¬(∃ e #x. RevealedClientEphemeralKey(e) @x) ∧
-        ¬(∃ e #x. RevealedServerEphemeralKey(e) @x)
+        /* and no revealing has happened before the message was sent */
+        ¬(∃ e #x. RevealedClientEphemeralKey(e) @x ∧ #x < #i) ∧
+        ¬(∃ e #x. RevealedServerEphemeralKey(e) @x ∧ #x < #i)
         ==>
         /* then the attacker does not know it */
         ¬(∃ #x. K(m) @x)
