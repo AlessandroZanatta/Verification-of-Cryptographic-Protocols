@@ -84,12 +84,8 @@ rule RevealClientEphemeralKey:
     [ Out(c) ]
 \end{lstlisting}
 
-\begin{equation}
-\msr{\fact{ClientEphemeralKey}{x}}{\fact{RevealedClientEphemeralKey}{x}}{\fact{Out}{x}}
-\end{equation}
-
 This actually models a \textit{generic} compromise rule. We can exploit timepoints in security properties to assert that the compromise must happen \textbf{after} some other event, making this a post-compromise.
-
+\newpage
 In Proverif, we define a new process which simply outputs the ephemeral key in phase 1:
 
 \lstset{language=proverif}
@@ -171,3 +167,4 @@ The next case-study is the Needham-Schroeder Public-key protocol. Two versions a
 In order to re-discover the attack, we model the protocol in a way that allows the attacker to decide whom the honest initiator executes the protocol with. The responder, however, only engages with the honest initiator.
 
 \paragraph{Flawed} 
+\paragraph{Fixed}
