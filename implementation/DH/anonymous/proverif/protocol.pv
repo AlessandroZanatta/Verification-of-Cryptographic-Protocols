@@ -49,10 +49,11 @@ type Key.
 fun group2key(G): Key [typeConverter].
 
 (*
- * Deterministic symmetric encryption definition.
+ * Symmetric encryption definition.
  *)
 fun enc(Plaintext, Key): Ciphertext.
 
+(* Destructor definition for encryption *)
 reduc forall m: Plaintext, k: Key;
   dec(enc(m,k), k) = m.
 

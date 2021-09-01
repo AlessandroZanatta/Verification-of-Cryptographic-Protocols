@@ -2,6 +2,7 @@
 
 import numpy as np
 import json
+import os
 import logging
 from rich.logging import RichHandler
 
@@ -21,87 +22,42 @@ log = logging.getLogger("rich")
 # ------------------- #
 INPUT_FILE = './benchmarks.json'
 
-
-
-
+CAPTIONS = {
+    'DHanonymous': 'Comparison table for anonymous Diffie-Hellman',
+    'DHephemeral': 'Comparison table for ephemeral Diffie-Hellman',
+    'DHpfs': 'Comparison table for ephemeral Diffie-Hellman with post-compromise',
+    'PublicNeedhamSchroederfixed': 'Comparison table for Needham-Schroeder Public Key',
+    'PublicNeedhamSchroederflawed': 'Comparison table for Needham-Schroeder-Lowe Public Key'
+}
 
 
 with open(INPUT_FILE) as f:
     data = json.load(f)
 
-def create_table(args):
+def create_table(args, name, caption):
     return r'''
 \begin{{table}}[]
-\makebox[\textwidth][c]{{
-\begin{{tabular}}{{cccccccccc}}
-\multicolumn{{1}}{{l}}{{}} &
-  \multicolumn{{3}}{{c}}{{\textbf{{Peak mem usage (kb)}}}} &
-  \multicolumn{{3}}{{c}}{{\textbf{{Time (ms)}}}} &
-  \multicolumn{{3}}{{c}}{{\textbf{{CPU time}}}} \\ \cline{{2-10}} 
-\multicolumn{{1}}{{l|}}{{}} &
-  \multicolumn{{1}}{{c|}}{{Tamarin}} &
-  \multicolumn{{1}}{{c|}}{{Verifpal}} &
-  \multicolumn{{1}}{{c|}}{{Proverif}} &
-  \multicolumn{{1}}{{c|}}{{Tamarin}} &
-  \multicolumn{{1}}{{c|}}{{Verifpal}} &
-  \multicolumn{{1}}{{c|}}{{Proverif}} &
-  \multicolumn{{1}}{{c|}}{{Tamarin}} &
-  \multicolumn{{1}}{{c|}}{{Verifpal}} &
-  \multicolumn{{1}}{{c|}}{{Proverif}} \\ \hline
-\multicolumn{{1}}{{|c|}}{{\textbf{{Mean}}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} \\ \hline
-\multicolumn{{1}}{{|c|}}{{\textbf{{Std}}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} \\ \hline
-\multicolumn{{1}}{{|c|}}{{\textbf{{Median}}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} \\ \hline
-\multicolumn{{1}}{{|c|}}{{\textbf{{Min}}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} \\ \hline
-\multicolumn{{1}}{{|c|}}{{\textbf{{Max}}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.0f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} &
-  \multicolumn{{1}}{{c|}}{{{:.2f}}} \\ \hline
+\makebox[\textwidth]{{
+\begin{{tabular}}{{c|c|c|c|c|c|c|c|c|c|}}
+\cline{{2-10}}
+\multicolumn{{1}}{{l|}}{{}} & \multicolumn{{3}}{{c|}}{{\textbf{{Peak memory size (kb)}}}} & \multicolumn{{3}}{{c|}}{{\textbf{{Time (s)}}}} & \multicolumn{{3}}{{c|}}{{\textbf{{CPU time (\%)}}}} \\ \cline{{2-10}} 
+\multicolumn{{1}}{{l|}}{{}}                    & Tamarin & Verifpal & Proverif & Tamarin & Verifpal & Proverif & Tamarin & Verifpal & Proverif \\ \hline
+\multicolumn{{1}}{{|c|}}{{\textbf{{Mean}}}}      & {:.0f}   & {:.0f}    & {:.0f}    & {:.0f}   & {:.0f}    & {:.0f}    & {:.2f}   & {:.2f}    & {:.2f}    \\ \hline
+\multicolumn{{1}}{{|c|}}{{\textbf{{Deviation}}}} & {:.0f}   & {:.0f}    & {:.0f}    & {:.0f}   & {:.0f}    & {:.0f}    & {:.2f}   & {:.2f}    & {:.2f}    \\ \hline
+\multicolumn{{1}}{{|c|}}{{\textbf{{Median}}}}    & {:.0f}   & {:.0f}    & {:.0f}    & {:.0f}   & {:.0f}    & {:.0f}    & {:.2f}   & {:.2f}    & {:.2f}    \\ \hline
+\multicolumn{{1}}{{|c|}}{{\textbf{{Min}}}}       & {:.0f}   & {:.0f}    & {:.0f}    & {:.0f}   & {:.0f}    & {:.0f}    & {:.2f}   & {:.2f}    & {:.2f}    \\ \hline
+\multicolumn{{1}}{{|c|}}{{\textbf{{Max}}}}       & {:.0f}   & {:.0f}    & {:.0f}    & {:.0f}   & {:.0f}    & {:.0f}    & {:.2f}   & {:.2f}    & {:.2f}    \\ \hline
 \end{{tabular}}
 }}
-\end{{table}}'''.format(*args)
+\label{{{}}}
+\caption{{{}}}
+\end{{table}}'''.format(*args, 'tab:'+name, caption).replace(' -1 ', 'NA').replace('-1.00', 'NA')
 
+def save_table(name, table):
+    where = '../paper/tables'
+    
+    with open(os.path.join(where, name + '.tex',), 'w') as f:
+        f.write(table)
 
 stats = {}
 for x in data:
@@ -158,4 +114,5 @@ for idpv, st in stats.items():
         for j in range(3):
             for tool, data in sorted_st:
                 args.append(data[j*5 + i])
-    print(create_table(args))
+
+    save_table(idpv, create_table(args, idpv, CAPTIONS[idpv]))

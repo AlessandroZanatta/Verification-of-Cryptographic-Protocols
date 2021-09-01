@@ -131,7 +131,7 @@ table ClientKey(Key).
  * Information stored into tables is NOT available to the attacker.
  * This implies that we also should output the value on the public channel io.
  *)
-table CertificateValue(G).
+table AuthenticatedValueTable(G).
 
 (********************************************************************************)
 (* Process macros                                                               *)
@@ -158,8 +158,8 @@ let Client() =
    *)
   in(io, g_r: G);
 
-  (* Check that the value g_r is actually certificated *)
-  get CertificateValue(g_r) in
+  (* Check that the value g_r is actually authenticated *)
+  get AuthenticatedValueTable(g_r) in
   let k = group2key(exp(g_r, i)) in
   event ClientAcceptedKey(k);
   insert ClientKey(k);
@@ -169,7 +169,7 @@ let Server() =
   in(io, g_i: G);
   new r: Z;
   let g_r = exp(g, r) in
-  insert CertificateValue(g_r);
+  insert AuthenticatedValueTable(g_r);
   out(io, g_r);
   let k = group2key(exp(g_i, r)) in
   event ServerAcceptedKey(k);

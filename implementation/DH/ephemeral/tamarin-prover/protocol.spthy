@@ -16,7 +16,7 @@ begin
    * The term x here cannot be changed by the adversary, but we have to make sure
    * that we provide x to the adversary.
    */
-  rule CertificateIn:
+  rule CertificateExchange:
       [ CertificateOut(x) ]
     -->
       [ CertificateIn(x), Out(x) ]

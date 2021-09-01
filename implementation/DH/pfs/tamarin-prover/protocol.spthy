@@ -16,7 +16,7 @@ begin
    * The term x here cannot be changed by the adversary, but we have to make sure
    * that we provide x to the adversary.
    */
-  rule CertificateIn:
+  rule CertificateExchange:
       [ CertificateOut(x) ]
     -->
       [ CertificateIn(x), Out(x) ]
@@ -31,7 +31,7 @@ begin
       [ 
         Out('g' ^ ~c),              // Output the half key of the client
         InitatorState_1(~c),        // Save the state for next rule
-        !ClientEphemeralKey(~c)
+        ClientEphemeralKey(~c)
       ]
 
   rule 2_Server:
@@ -47,7 +47,7 @@ begin
       [ 
         CertificateOut(g_s),        // Send out half key
         !ServerKey(k),              // Persistent fact to record the established server key
-        !ServerEphemeralKey(~s)
+        ServerEphemeralKey(~s)
       ]
 
   rule 3_Client:
@@ -110,12 +110,12 @@ begin
 /********************************************************************************/
 
   rule RevealClientEphemeralKey:
-      [ !ClientEphemeralKey(~c) ]
+      [ ClientEphemeralKey(~c) ]
     --[ RevealedClientEphemeralKey(~c) ]->
       [ Out(~c) ]
 
   rule RevealServerEphemeralKey:
-      [ !ServerEphemeralKey(~s) ]
+      [ ServerEphemeralKey(~s) ]
     --[ RevealedServerEphemeralKey(~s) ]->
       [ Out(~s) ]
 
