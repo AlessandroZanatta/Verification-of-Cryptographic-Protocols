@@ -149,9 +149,9 @@ begin
   /*
    * This is needed in order to prove any security lemma.
    * This lemma with the [sources] annotation is saying where a certain
-   * must have came from. This simplifies the proofs by a lot.
+   * fact must have came from. This simplifies the proofs by a lot.
    *
-   * You may try to comment this lemma and prove a 
+   * You may try to comment this lemma and try to prove security properties.
    */
   lemma Types [sources]:
     "

@@ -49,10 +49,6 @@ fun choosePrincipal(Principal, Principal, Principal): Principal
     reduc forall X: Principal, Y: Principal; choosePrincipal(X,X,Y) = X
     otherwise forall X: Principal, Y: Principal; choosePrincipal(Y,X,Y) = Y.
 
-fun chooseOtherPrincipal(Principal, Principal, Principal): Principal
-    reduc forall X, Y: Principal; chooseOtherPrincipal(X,X,Y) = Y
-    otherwise forall X,Y: Principal; chooseOtherPrincipal(X,Y,X) = Y.
-
 (********************************************************************************)
 (* Tables definitions                                                           *)
 (********************************************************************************)
