@@ -64,14 +64,23 @@ keywords = {protocols, authentication, encryption, public-key cryptosystems, dat
     note = {Accessed: 2021-08-20}
 }
 
-@misc{Signal,
-    title  = {Signal specification},
-    author = {Signal team},
-    howpublished = {\url{https://signal.org/docs/}},
-    note = {Accessed: 2021-08-20}
+@misc{rfc4251,
+	series =	{Request for Comments},
+	number =	4251,
+	howpublished =	{RFC 4251},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC4251},
+	url =		{https://rfc-editor.org/rfc/rfc4251.txt},
+        author =	{Chris M. Lonvick and Tatu Ylonen},
+	title =		{{The Secure Shell (SSH) Protocol Architecture}},
+	pagetotal =	30,
+	year =		2006,
+	month =		jan,
+	abstract =	{The Secure Shell (SSH) Protocol is a protocol for secure remote login and other secure network services over an insecure network. This document describes the architecture of the SSH protocol, as well as the notation and terminology used in SSH protocol documents. It also discusses the SSH algorithm naming system that allows local extensions. The SSH protocol consists of three major components: The Transport Layer Protocol provides server authentication, confidentiality, and integrity with perfect forward secrecy. The User Authentication Protocol authenticates the client to the server. The Connection Protocol multiplexes the encrypted tunnel into several logical channels. Details of these protocols are described in separate documents. {[}STANDARDS-TRACK{]}},
 }
 
-@ARTICLE{Dolev-Yao,  author={Dolev, D. and Yao, A.},  journal={IEEE Transactions on Information Theory},   title={On the security of public key protocols},   year={1983},  volume={29},  number={2},  pages={198-208},  doi={10.1109/TIT.1983.1056650}}
+
+@article{Dolev-Yao,  author={Dolev, D. and Yao, A.},  journal={IEEE Transactions on Information Theory},   title={On the security of public key protocols},   year={1983},  volume={29},  number={2},  pages={198-208},  doi={10.1109/TIT.1983.1056650}}
 
 @article{ReconcilingComputationalSymbolic,
         title        = {Reconciling Two Views of Cryptography (The Computational Soundness of Formal Encryption)},
@@ -143,4 +152,35 @@ isbn="978-3-540-31987-0"
 	pages        = {217--274},
 	issn         = {00223611, 15730433},
 	url          = {http://www.jstor.org/stable/30226645}
+}
+
+@misc{VerifpalFoundations,
+    author       = {Nadim Kobeissi and
+		    Georgio Nicolas and
+		    Mukesh Tiwari},
+    title        = {Verifpal: Cryptographic Protocol Analysis for the Real World},
+    howpublished = {Cryptology ePrint Archive, Report 2019/971},
+    year         = {2019},
+    note         = {\url{https://ia.cr/2019/971}},
+}
+
+@misc{VerifpalManual,
+    title = {Verifpal User Manual},
+    author = {Nadim Kobeissi},
+    howpublished = {\url{https://verifpal.com/res/pdf/manual.pdf}},
+    year = {2021}
+}
+@misc{MITM-DH,
+  title = {Analysis of a man-in-the-middle attack on the Diffie-Hellman key exchange protocol},
+  author = {Geary, Aaron C.},
+  year = {2009},
+  URL = {https://calhoun.nps.edu/handle/10945/4509},
+  publisher = {Calhoun}
+}
+
+@misc{PFS,
+    title = {Perfect Forward Secrecy, An Extra Layer of Security and Privacy},
+    author = {Pratik Guha Sarkar},
+    year = {2014},
+    howpublished = https://www.isecpartners.com}
 }

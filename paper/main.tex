@@ -24,12 +24,9 @@
 \usepackage{amssymb}
 \usepackage{amsthm} % Proofs
 \usepackage{listings} % Listings
-\usepackage{boldline} % Thickness of table lines
-\usepackage{multirow} % Text of a table cell on multiple rows
-\usepackage{longtable} % Tables that span multiple pages
 \usepackage{rotating} % Text rotations
 \usepackage[fixlanguage]{babelbib} % Bibliography
-\bibliographystyle{babplain-fl}
+\bibliographystyle{unsrt}
 \usepackage[nottoc,notlot,notlof]{tocbibind}
 
 % Authors in italian
@@ -38,17 +35,19 @@
 \renewcommand\Authands{ e }
 
 % Style
-\setcounter{tocdepth}{2} % ToC max depth
+\setcounter{tocdepth}{1} % ToC max depth
 
 % ------------------- %
 % Additional packages %
 % ------------------- %
+\usepackage[dvipsnames]{xcolor}
 \usepackage{cleveref}
 \usepackage{afterpage}
 \usepackage{msc}
-\usepackage{algorithm}
-\usepackage{algpseudocode}
 \usepackage[euler]{textgreek}
+\usepackage[justification=centering]{caption}
+\usepackage{courier}
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
 
 % Theorems
 \theoremstyle{plain}
@@ -83,13 +82,15 @@
 }
 
 \newcommand*{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand*{\Q}{\ensuremath{\mathbb{Q}}}
 
-% msr
 %% Taken from https://hal.inria.fr/file/index/docid/955869/filename/sapic.tex
 \newcommand{\msrewrite}[1]{\mathrel{-\hspace{-2pt}[#1]\hspace{-4pt}\to}}
 \newcommand{\emptyrule}{\ensuremath{[]}\xspace}
 \newcommand{\msr}[3]{\ensuremath{#1 \msrewrite{#2} #3}}
 %% -------------- %%
+
+\newcommand{\fact}[2]{\ensuremath{\mbox{#1}\left(#2\right)}}
 
 \newcommand{\msrnolabel}[2]{\ensuremath{#1 \rightarrow #2}}
 \newcommand{\msrsetminus}{\ensuremath{\setminus^\#}}
@@ -98,13 +99,76 @@
 \newcommand{\msrin}{\ensuremath{\in^\#}}
 \newcommand{\msrsubseteq}{\ensuremath{\subseteq^\#}}
 
+% Applied pi-calculus
+\newcommand{\pic}{\textpi-calculus }
+\newcommand{\picnospace}{\textpi-calculus}
+\newcommand{\apicpc}[2]{\ensuremath{P\ |\ Q}}
+\newcommand{\apicin}[4]{\mbox{in}\left(#1, #2: #3\right); #4}
+\newcommand{\apicout}[3]{\mbox{out}\left(#1, #2\right); #3}
+\newcommand{\apicrep}[1]{!#1}
+\newcommand{\apicnew}[3]{\ensuremath{\mbox{new}\ #1: #2; #3}}
+\newcommand{\apiclet}[5]{\ensuremath{\mbox{let}\ #1: #2\ = #3\ \mbox{in}\ #4\ \mbox{else}\ #5}}
+\newcommand{\apicif}[3]{\ensuremath{\mbox{if}\ #1\ \mbox{then}\ #2\ \mbox{else}\ #3}}
+\newcommand{\apicevent}[2]{\ensuremath{\mbox{event}\ \mbox{#1}\left(#2\right)}}
+
+\newcommand{\apictableget}[2]{\ensuremath{\mbox{get}\ #1\left(#2\right)\ in}}
+
+
+% ------------------ %
+% Languages listings %
+% ------------------ %
+\lstdefinelanguage{tamarin}
+{
+  keywordstyle=\color{MidnightBlue}\bfseries,
+  keywordstyle=[2]\itshape,
+  keywordstyle=[3]\color{Green}\bfseries,
+  keywordstyle=[4]\color{RedViolet}\bfseries,
+  keywords={Out, In},
+  keywords=[2]{},
+  keywords=[3]{},
+  keywords=[4]{rule},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n][\color{OliveGreen}\itshape]{/*}{*/},
+  morestring=[b]",
+}
+
+\lstdefinelanguage{verifpal}
+{
+  keywordstyle=\color{MidnightBlue}\bfseries,
+  keywordstyle=[2]\itshape,
+  keywordstyle=[3]\color{Green}\bfseries,
+  alsoletter={[, ]},
+  keywords={principal},
+  keywords=[2]{Client, Server},
+  keywords=[3]{leaks, phase},
+  sensitive=true,
+  morecomment=[l]{//},
+  morestring=[b]",
+}
+
+\lstdefinelanguage{proverif}
+{
+  keywordstyle=\color{MidnightBlue}\bfseries,
+  keywordstyle=[2]\itshape,
+  keywordstyle=[3]\color{Green}\bfseries,
+  keywords={leaks, phase, get, out, event, in, ., ;, attacker, |, new, if, else, then, !, let},
+  alsoletter={., ;, |, !},
+  keywords=[2]{Client, Server},
+  keywords=[3]{},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n][\color{OliveGreen}\itshape]{(*}{*)},
+  morestring=[b]",
+}
+
 % ------------------ %
 % Customizable stuff %
 % ------------------ %
 
 % Thesis title and metadata
 \def\thetitle{Comparison of Tools for the Verification of Cryptographic Protocols}
-\def\subtitle{A practical exploratory approach to three different tools: Tamarin-prover, Verifpal and Proverif}
+\def\subtitle{A comparison of three symbolic model tools for formal verification:\\Tamarin-prover, Verifpal and Proverif}
 \author[a]{Alessandro Zanatta}
 \renewcommand\Affilfont{\small}
 \def\uni{University\\of Udine} % University name

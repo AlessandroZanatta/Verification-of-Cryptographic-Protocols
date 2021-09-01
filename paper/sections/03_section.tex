@@ -5,29 +5,37 @@
 \section{Case study}
 \label{section:case-study}
 
-The full models of the following examples is freely available \cite{CaseStudies}.
+The full models of the following examples are freely available on github \cite{CaseStudies}.
 
 \subsection{Diffie-Hellman key exchange}
+
+We will examine three different models for the Diffie-Hellman key exchange protocol: anonymous, ephemeral and ephemeral with Perfect Forward Secrecy. This allows us to explore many advanced features and modelling techniques of each tool. \Cref{fig:dh-key-exchange} shows a schematic representation of the protocol.
+
+In the anonymous version we model an un-authenticated Diffie-Hellman, where no security property can hold as the adversary is free to perform a man-in-the-middle attack \cite{MITM-DH}.
+
+In the ephemeral version we model a client-server Diffie-Hellman exchange in which the server's half key is authenticated (e.g. by an X.509 certificate). The server is willing to execute the protocol with any client, but the server is always authenticated.
+
+Finally, we model a Diffie-Hellman with post-compromise of ephemeral keys. This is how Perfect Forward Secrecy \cite{PFS} is usually tested in the symbolic model. Of course, secrecy of the exchanged messages will not hold.
 
 \begin{figure}[t]
     \setmscoptions
     \begin{msc}{}
-    \setmscscale{.8} 
+    \setmscscale{.7} 
     
     \declinst{client}{}{Client}
     \declinst{server}{}{Server}
     
-    \action*{\parbox{4.5cm}{\centering
+    \action*{\parbox{3.5cm}{\centering
         Knows $g, p$\\
-        $c \in \Z$
+        $c \in \Z$\\
         $g_c := g ^ c \mod{p}$
     }}{client}
 
-    \nextlevel[4]
+    \nextlevel[5]
     \mess{$g_c$}{client}{server}
     \nextlevel
 
-    \action*{\parbox{4.5cm}{\centering
+    \action*{\parbox{3.5cm}{\centering
         Knows $g, p$\\
         $s \in \Z$\\
         $g_s := g ^ s \mod{p}$\\
@@ -38,7 +46,7 @@ The full models of the following examples is freely available \cite{CaseStudies}
     \mess{$g_s$}{server}{client}
     \nextlevel
 
-    \action*{\parbox{4.5cm}{\centering
+    \action*{\parbox{3.5cm}{\centering
         $K_{cs} := g_s ^ c \mod{p}$
     }}{client}
     \nextlevel
@@ -49,75 +57,117 @@ The full models of the following examples is freely available \cite{CaseStudies}
     \label{fig:dh-key-exchange}
 \end{figure}
 
-\subsubsection{Anonymous}
+\subsubsection{Implementation notes}
 
-\subsubsection{Ephemeral}
+We will describe implementation details worth of note in the next paragraphs. Notice that we will use an incremental approach, describing only what was \textit{changed} between different versions. 
 
-\subsubsection{Perfect Forward Secrecy}
+\paragraph{Anonymous} The implementation of the anonymous version is straightforward. We use two particular constructs for Proverif and Tamarin to store keys: tables and persistent facts, respectively. Both serve the same scope: store some permanent information (which is not, by default, available to the attacker). The first supports two operations: \textit{insert} and \textit{get}. The latter is, in essence, a \textit{fact} with the additional property of never being removed from the global state.
 
+\paragraph{Ephemeral} In this version, the server half key needs to be authenticated\footnote{An additional requirement is that, while the half key cannot be mutated by the attacker, it must be available to it.}. In Verifpal there is a single (simple) way: guarded variables. Guarded variables (variables between square brackets) are not mutable by the attacker (but known by it). In Tamarin we model this with a simple private channel ruled by a passive attacker. This is done with the following multiset rewriting rule:
+
+
+\lstset{language=tamarin}
+\begin{lstlisting}
+rule CertificateExchange:
+    [ CertificateOut(x) ] --> [ CertificateIn(x), Out(x) ]
+\end{lstlisting}
+
+Finally, in Proverif we model this with a table, additionally making sure to output everything we insert into it. We could have also used a private channel, but that makes the verification of certain queries yield an inconclusive result.
+
+\paragraph{Post-compromise} In tamarin, we define the following rule (for both client and server):
+
+\lstset{language=tamarin}
+\begin{lstlisting}
+rule RevealClientEphemeralKey:
+    [ ClientEphemeralKey(c) ]
+  --[ RevealedClientEphemeralKey(c) ]->
+    [ Out(c) ]
+\end{lstlisting}
+
+\begin{equation}
+\msr{\fact{ClientEphemeralKey}{x}}{\fact{RevealedClientEphemeralKey}{x}}{\fact{Out}{x}}
+\end{equation}
+
+This actually models a \textit{generic} compromise rule. We can exploit timepoints in security properties to assert that the compromise must happen \textbf{after} some other event, making this a post-compromise.
+
+In Proverif, we define a new process which simply outputs the ephemeral key in phase 1:
+
+\lstset{language=proverif}
+\begin{lstlisting}
+let PostRevealClientEphemeralKey =
+    phase 1;
+
+    (* Get the client's ephemeral key and output it *)
+    get ClientEphemeralKeyTable(c) in
+    out(io, c);
+    event PostRevealedClientEphemeralKeyTable(c);
+    0.
+\end{lstlisting}
+
+\lstset{language=verifpal}
+Modeling post-compromise in Verifpal requires using phases again. We can then use Verifpal's built-in construct for revealing terms: \lstinline{leaks x}.  
+\begin{lstlisting}
+phase [1]
+
+principal Client [
+    leaks c
+]
+
+principal Server [
+    leaks s
+]
+\end{lstlisting}
 
 \subsection{Needham-Schroeder public-key protocol}
 
 \begin{figure}[t]
     \setmscoptions
     \begin{msc}{}
-    \setmscscale{.8} 
+    \setmscscale{.7} 
     
     \declinst{alice}{}{Alice}
-    \declinst{server}{}{Server}
     \declinst{bob}{}{Bob}
     
-    \action*{\parbox{4.5cm}{\centering
-        Knows $K_{SS}, K_{PS}$\\
-        Knows $K_{PB}, K_{PA}$
-    }}{server}
-
-    \action*{\parbox{4.5cm}{\centering
+    \action*{\parbox{3.5cm}{\centering
         Knows $K_{SA}, K_{PA}$\\
-        Knows $K_{PS}$
+        Knows $K_{PB}$
     }}{alice}
 
-    \action*{\parbox{4.5cm}{\centering
+    \action*{\parbox{3.5cm}{\centering
         Knows $K_{SB}, K_{PB}$\\
-        Knows $K_{PS}$
+        Knows $K_{PA}$
     }}{bob}
     \nextlevel[4]
 
-    \mess{$\mbox{A}, \mbox{B}$}{alice}{server}
-    \nextlevel[2]
-    \mess{$\left\{K_{PB}, B\right\}_{K_{SS}}$}{server}{alice}
-    \nextlevel
-
-    \action*{\parbox{4.5cm}{\centering
+    \action*{\parbox{3.5cm}{\centering
         Generates $N_A$
     }}{alice}
 
     \nextlevel[3]    
-    \mess[pos=0.75]{$\left\{N_A, A\right\}_{K_{PB}}$}{alice}{bob}
-    \nextlevel[2]
-    \mess{$\mbox{B}, \mbox{A}$}{bob}{server}
-    \nextlevel[2]
-    \mess{$\left\{K_{PA}, A\right\}_{K_{SS}}$}{server}{bob}
+    \mess{$\left\{N_A, A\right\}_{K_{PB}}$}{alice}{bob}
     \nextlevel
 
 
-    \action*{\parbox{4.5cm}{\centering
+    \action*{\parbox{3.5cm}{\centering
         Generates $N_B$
     }}{bob}
 
+    \nextlevel[3]
+    \mess{$\left\{N_A, N_B\right\}_{K_{PA}}$}{bob}{alice}
     \nextlevel[2]
-    \mess[pos=0.75]{$\left\{N_A, N_B\right\}_{K_{PA}}$}{bob}{alice}
-    \nextlevel[2]
-    \mess[pos=0.75]{$\left\{N_B\right\}_{K_{PB}}$}{alice}{bob}
-    \nextlevel
+    \mess{$\left\{N_B\right\}_{K_{PB}}$}{alice}{bob}
 
     \end{msc}
 
     \centering
-    \caption{Needham-Schroeder Public-key protocol}
+    \caption{Simplified Needham-Schroeder Public-key protocol}
     \label{fig:NSPK}
 \end{figure}
 
-\subsubsection{Flawed version}
+The next case-study is the Needham-Schroeder Public-key protocol. Two versions are considered: the flawed version and the fixed one (by Lowe \cite{NSPK_LoweGavin}). A schematic representation of the protocol is shown in \cref{fig:NSPK}, which assumes that clients already know each others public keys.
 
-\subsubsection{Fixed version}
+\subsubsection{Implementation notes}
+
+In order to re-discover the attack, we model the protocol in a way that allows the attacker to decide whom the honest initiator executes the protocol with. The responder, however, only engages with the honest initiator.
+
+\paragraph{Flawed} 

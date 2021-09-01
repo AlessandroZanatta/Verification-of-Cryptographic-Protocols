@@ -7,6 +7,8 @@ RESET=`tput sgr 0`
 
 OUTDIR='out'
 
+
+.PHONY: pdf
 pdf:
 	mkdir -p ${OUTDIR}
 	pdflatex --output-directory ${OUTDIR} main.tex
@@ -14,3 +16,6 @@ pdf:
 	pdflatex --output-directory ${OUTDIR} main.tex
 	pdflatex --output-directory ${OUTDIR} main.tex
 
+.PHONY: single
+single:
+	pdflatex --output-directory ${OUTDIR} main.tex
