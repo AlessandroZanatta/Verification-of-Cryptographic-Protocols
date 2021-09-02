@@ -36,17 +36,17 @@ GLOBAL_RESULTS = []
 LANGUAGES = {
     'proverif': {
         'cmdline': 'proverif %s',
-        'executions': 100,
+        'executions': 1000,
         'extension': '.pv'
     },
     'verifpal': {
         'cmdline': 'verifpal verify %s',
-        'executions': 100,
+        'executions': 1000,
         'extension': '.vp'
     },
     'tamarin-prover': {
         'cmdline': 'tamarin-prover %s --prove',
-        'executions': 10,
+        'executions': 50,
         'extension': '.spthy'
     }
 }
