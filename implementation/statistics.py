@@ -36,7 +36,7 @@ with open(INPUT_FILE) as f:
 
 def create_table(args, name, caption):
     return r'''
-\begin{{table}}[]
+\begin{{table}}[t]
 \makebox[\textwidth]{{
 \begin{{tabular}}{{c|c|c|c|c|c|c|c|c|c|}}
 \cline{{2-10}}
