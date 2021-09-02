@@ -85,8 +85,8 @@ rule RevealClientEphemeralKey:
 \end{lstlisting}
 
 This actually models a \textit{generic} compromise rule. We can exploit timepoints in security properties to assert that the compromise must happen \textbf{after} some other event, making this a post-compromise.
-\newpage
-In Proverif, we define a new process which simply outputs the ephemeral key in phase 1:
+
+In Proverif, we define a process macro which simply outputs the ephemeral key in phase 1:
 
 \lstset{language=proverif}
 \begin{lstlisting}
@@ -164,7 +164,32 @@ The next case-study is the Needham-Schroeder Public-key protocol. Two versions a
 
 \subsubsection{Implementation notes}
 
-In order to re-discover the attack, we model the protocol in a way that allows the attacker to decide whom the honest initiator executes the protocol with. The responder, however, only engages with the honest initiator.
+In order to re-discover the attack, we model the protocol in a way that allows the attacker to decide whom the honest initiator executes the protocol with. The responder, however, only wishes to engage with the honest initiator.
 
 \paragraph{Flawed} 
+
+In Proverif, to allow the behaviour described above, we let the attacker send the principals to the initiator at the start of its macro:
+
+\lstset{language=proverif}
+\begin{lstlisting}
+let Initiator() =
+(* Attacker sends communicating parties *)
+in(io, (X: Principal, rUser: Principal));
+
+(* We restrict them: X must be honest and rUser must not be X *)
+let iUser = isHonest(X, Alice, Bob) in
+if iUser <> rUser then (* Protocol starts here *)
+\end{lstlisting}
+
+In Tamarin we follow a very similar approach, but we define the initiator to be always Alice (i.e. the attacker chooses \textit{only} the responder). Using the same strategy of Proverif would lead to a very complex protocol.
+
+In Verifpal the implementation is straightforward, with a single caveat: when pre-sharing public keys we need to guard only Alice key. This allows the attacker to mutate Bob's key to its own.
+
+\lstset{language=verifpal}
+\begin{lstlisting} 
+Alice -> Bob: [K_PA]
+Bob -> Alice: K_PB
+\end{lstlisting}
+
+
 \paragraph{Fixed}

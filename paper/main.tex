@@ -35,7 +35,7 @@
 \renewcommand\Authands{ e }
 
 % Style
-\setcounter{tocdepth}{1} % ToC max depth
+\setcounter{tocdepth}{2} % ToC max depth
 
 % ------------------- %
 % Additional packages %
@@ -47,7 +47,9 @@
 \usepackage[euler]{textgreek}
 \usepackage[justification=centering]{caption}
 \usepackage{courier}
-\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+\usepackage[margin=1.49in]{geometry}
+\usepackage{enumitem}
+\setlist{noitemsep}
 
 % Theorems
 \theoremstyle{plain}
@@ -68,6 +70,9 @@
 % ---- Commands ---- %
 % ------------------ %
 
+% Basic setting for listings
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true,captionpos=b}
+
 % Comments
 \newcommand{\comment}[1]{}
 
@@ -87,11 +92,12 @@
 %% Taken from https://hal.inria.fr/file/index/docid/955869/filename/sapic.tex
 \newcommand{\msrewrite}[1]{\mathrel{-\hspace{-2pt}[#1]\hspace{-4pt}\to}}
 \newcommand{\emptyrule}{\ensuremath{[]}\xspace}
-\newcommand{\msr}[3]{\ensuremath{#1 \msrewrite{#2} #3}}
+\newcommand{\msr}[3]{\ensuremath{\left[#1\right] \msrewrite{#2} \left[#3\right]}}
 %% -------------- %%
 
 \newcommand{\fact}[2]{\ensuremath{\mbox{#1}\left(#2\right)}}
 
+% Multiset rewriting rules
 \newcommand{\msrnolabel}[2]{\ensuremath{#1 \rightarrow #2}}
 \newcommand{\msrsetminus}{\ensuremath{\setminus^\#}}
 \newcommand{\msrcap}{\ensuremath{\cap^\#}}
@@ -110,9 +116,10 @@
 \newcommand{\apiclet}[5]{\ensuremath{\mbox{let}\ #1: #2\ = #3\ \mbox{in}\ #4\ \mbox{else}\ #5}}
 \newcommand{\apicif}[3]{\ensuremath{\mbox{if}\ #1\ \mbox{then}\ #2\ \mbox{else}\ #3}}
 \newcommand{\apicevent}[2]{\ensuremath{\mbox{event}\ \mbox{#1}\left(#2\right)}}
-
 \newcommand{\apictableget}[2]{\ensuremath{\mbox{get}\ #1\left(#2\right)\ in}}
 
+
+\usepackage{fixltx2e}
 
 % ------------------ %
 % Languages listings %
@@ -123,7 +130,7 @@
   keywordstyle=[2]\itshape,
   keywordstyle=[3]\color{Green}\bfseries,
   keywordstyle=[4]\color{RedViolet}\bfseries,
-  keywords={Out, In},
+  keywords={Out, In, K, KU},
   keywords=[2]{},
   keywords=[3]{},
   keywords=[4]{rule},
@@ -138,10 +145,12 @@
   keywordstyle=\color{MidnightBlue}\bfseries,
   keywordstyle=[2]\itshape,
   keywordstyle=[3]\color{Green}\bfseries,
-  alsoletter={[, ]},
-  keywords={principal},
-  keywords=[2]{Client, Server},
+  keywordstyle=[4]\color{Orange}\bfseries,
+  alsoletter={->, ?},
+  keywords={principal, attacker, queries, ->, ?},
+  keywords=[2]{Client, Server, Alice, Bob},
   keywords=[3]{leaks, phase},
+  keywords=[4]{active, passive},
   sensitive=true,
   morecomment=[l]{//},
   morestring=[b]",
@@ -168,7 +177,7 @@
 
 % Thesis title and metadata
 \def\thetitle{Comparison of Tools for the Verification of Cryptographic Protocols}
-\def\subtitle{A comparison of three symbolic model tools for formal verification:\\Tamarin-prover, Verifpal and Proverif}
+\def\subtitle{A comparison of three symbolic model tools for formal verification:\\Tamarin-prover, Proverif and Verifpal}
 \author[a]{Alessandro Zanatta}
 \renewcommand\Affilfont{\small}
 \def\uni{University\\of Udine} % University name

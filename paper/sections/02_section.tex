@@ -5,27 +5,32 @@
 \section{Tools description}
 \label{section:foundations}
 
-In this section we are going to see a brief overview on the foundations of Tamarin prover, Verifpal  and Proverif - the three tools we are going to compare.
+In this section we are going to see a brief overview on the syntax and foundations of Tamarin, Proverif and Verifpal - the three tools we are going to compare.
 
 
 \subsection{Tamarin prover}
 Let us start with Tamarin prover. For a more
-in-depth description and further information, see the Tamarin foundations paper \cite{TamarinFoundations} or the extended foundations paper \cite{TamarinFoundationsExtended}.
+in-depth description and further information, see \cite{TamarinFoundations, TamarinFoundationsExtended, TamarinManual}.
 
 The security property model of Tamarin is based on labelled multiset rewriting rules to specify protocols and adversary capabilities, a guarded fragment\footnote{The guarded fragment used by Tamarin is basically a subset of formulas from the first order logic with additional constraints on the arguments. See \cite{FragmentFirstOrderLogicPaper} for a definition from a mathematical point of view.} of first order logic to specify security properties and functions and equational theories to model the algebraic properties of cryptographic protocols \cite{TamarinFoundations}. Additionally, every event in the security properties is annotated with a timepoint $t \in \Q$ and basic comparison of timepoints can be used.
 
 Tamarin then applies a constraint-solving algorithm based on backward-search and heuristics which tries to validate or falsify security properties.
 
-\subsubsection{Multiset rewriting system}
-The ingredients of Tamarin multiset rewriting system are the following:
+\subsubsection{Multiset rewriting system and state transitions}
 
+\paragraph{Multiset rewriting ingredients} The ingredients of Tamarin multiset rewriting system are the following:
+
+\lstset{language=tamarin}
 \begin{itemize}
-    \item{\textbf{Terms} - which can be thought of as messages;}
+    \item{\textbf{Terms} - which can be thought of as messages. Two built-in facts are used to model network I/O: \lstinline{In(x)} and \lstinline{Out(x)}. A third one, \lstinline{K(x)} is used to model attacker knowledge;}
     \item{\textbf{Facts} - which model information in the protocol and are composed by terms;}
     \item{\textbf{State of the system} - which is represented using a \textit{multiset} of facts;}
-    \item{\textbf{Transition rules} - which defines the possible transitions from one state to another. We will use the following syntax: $\msr{L}{A}{R}$, where $L$, $A$ and $R$ are multisets of facts, respectively called premises, actions and conclusions;}
+    \item{\textbf{Transition rules} - which defines the possible transitions from one state to another. Multiset rewriting rules are written as $\msr{L}{A}{R}$, where $L$, $A$ and $R$ are multisets of facts, respectively called premises, actions and conclusions;}
     \item{\textbf{Trace} - a sequence $\left<A_1, \dots, A_n\right>$ of sets of ground facts (i.e. facts which do not contain any variable) denoting the sequence of \textit{actions} that happened during a protocol execution.}
 \end{itemize}
+
+\paragraph{State transitions}
+Consider a ground multiset rewriting rule $\msr{l}{a}{r}$. If we call the state of the system $S$, the trace $T$ and assuming $l \msrsubseteq S$, the new state of the system $S'$ can be defined as $S' = S \msrsetminus l \msrcup r$. Additionally, we append $a$ to the end of the current trace $T$. \textsuperscript{\#} denotes multisets set operations.
 
 \comment{
     \subsubsection{Constraint-solving procedure}
@@ -41,55 +46,30 @@ The ingredients of Tamarin multiset rewriting system are the following:
     \end{algorithm}
 }
 
-\subsection{Verifpal}
 
-% TODO explain a bit of the syntax of verifpal!!!!
 
-Verifpal also supports phases like Proverif (of course, with a different syntax).
-
-\begin{figure}[t]
-    \makebox[\textwidth][c]{\includegraphics[scale=.6]{verifpal-internals}}
-    \centering
-    \caption{Verification process of Verifpal.\\ All credits to Nadim Kobeissi \cite{VerifpalManual}.}
-    \label{fig:verifpal-verification}
-\end{figure}
-
-\Cref{fig:verifpal-verification} shows the process of protocol verification used by Verifpal. Let us describe the 5 main steps:
-
-\begin{enumerate}
-    \item{\textbf{Gather values} - first of all, the attacker passively observes a protocol execution and gathers all the values shared on the public channel between parties;}
-    \item{\textbf{Populate attacker state} - gathered values are inserted into the attacker's state;}
-    \item{\textbf{Apply transformations} - the attacker applies the four transformations on all of the obtained value (see bottom-right squares in \cref{fig:verifpal-verification});}
-    \item{\textbf{Prepare next mutations} - if the attacker has learnt new values due to the transformations, it creates a combinatorial table of all possible substitutions and use it to derive a set of possible value substitutions across future executions of the protocol;}
-    \item{\textbf{Mutate protocol executions} - finally, the attacker proceeds to execute the protocol, each time applying a mutation from the previous step. As long as the attacker keeps on learning new values, this entire process of gathering, populating, transforming, preparing and mutating is repeated.}
-\end{enumerate}
-
-Verifpal, after each stage, checks if any defined security property has been falsified (e.g. the attacker state contains a certain message).
 
 \subsection{Proverif}
-
-
 \begin{figure}[t]
     \includegraphics[scale=.8]{proverif-verification-method}
     \centering
     \caption{Proverif verification method.\\Inspired by a representation from Bruno Blanchet \cite{SymbolicComputationalBlanchet}.}
     \label{fig:proverif-verification-method}
 \end{figure}
-
 Proverif protocols and security properties are based on an extended version of the \pic (the \textit{applied} \picnospace). The tool also allows the user to define constructors, destructors and equations\footnote{Destructors are basically used to de-construct some previously constructed term (e.g. decryption of an encrypted ciphertext), while equations represent term equality of some sort (e.g. commutativity of multiplication).}, which form the cryptographic primitives. The protocol is then automatically translated to a set of Horn-clauses. Using this abstract representation of the protocol (based on Horn-clauses), the Proverif verifier uses a resolution algorithm on such clauses that allows for verification of security properties \cite{SymbolicComputationalBlanchet}.
-A graphical representation of the whole process is given in \cref{fig:proverif-verification-method}.
+A graphical representation of the entire process is given in \cref{fig:proverif-verification-method}.
 
-A brief definition of the grammar of processes of the applied \pic is given in \cref{eq:apic-processes}. This syntax is identical to the one actually used by Proverif.
+A brief definition of the grammar of processes of the applied \pic is given in \cref{lst:apic-processes}, slightly modified to match the one actually used by Proverif.
 
 \lstset{language=proverif}
-\begin{lstlisting}
-0                  (* null process *)
-out(N, M); P       (* output to channel N the message M *)
-in(N, M: T); P     (* input from channel N of message M of sort T *)
-P | Q              (* parallel composition *)
-!P                 (* infinite replication *)
-new a: T; P        (* fresh value of sort T *)
-if M then P else Q (* conditional*)
+\begin{lstlisting}[caption={Applied \pic grammar of processes.}, label={lst:apic-processes}]
+0                    (* null process *)
+out(N, M); P         (* output to channel N the message M *)
+in(N, M: T); P       (* input from channel N of message M of sort T *)
+P | Q                (* parallel composition *)
+!P                   (* infinite replication *)
+new a: T; P          (* fresh value of sort T *)
+if M then P else Q   (* conditional*)
 \end{lstlisting}
 
 \lstset{language=proverif}
@@ -98,12 +78,61 @@ The null process \lstinline{0} does nothing;
 \lstinline{P | Q} is the parallel composition of \lstinline{P} and \lstinline{Q};
 The process \lstinline{!P} effectively behaves as an infinite number of copies of \lstinline{P} running in parallel (\textit{unbounded} replication);
 \lstinline{new a: T; P} creates a new fresh value of sort \lstinline{T}, before proceeding with process \lstinline{P};
-\lstinline{if M then P else Q} if a standard conditional.
+\lstinline{if M then P else Q} is a standard conditional.
 
 \lstset{language=proverif}
 There are many additions to this grammar, such as:
 \begin{itemize}
-    \item{\lstinline{event EventName(x, y);} - allows to define a trace of events on which security properties can be defined;}
-    \item{\lstinline{query event(EventName(x, y))} - queries are used to define security properties. The reserved word \lstinline{attacker(x)} allows to ask Proverif if the attacker knows the term $x$;}
-    \item{\lstinline{phase t;} - allows to execute a process only after processes of phases $< t$ have been executed. Intuitively, $t$ can be thought of as a global clock and a process in phase $t$ is active only during phase $t$.}
+    \item{\lstinline{event EventName(...);} - allows to define a trace of events on which security properties can be defined;}
+    \item{\lstinline{query event(EventName(...)).} - queries are used to define security properties. The reserved word \lstinline{attacker(x)} allows to ask Proverif if the attacker knows the term \lstinline{x};}
+    \item{\lstinline{phase t;} - allows to execute a process only after processes of phases \lstinline{< t} have been executed. Intuitively, \lstinline{t} can be thought of as a global clock and a process in phase \lstinline{t}  is active only during phase \lstinline{t};}
+    \item{\lstinline{let MacroName = P.} - allows to create a process macro, which is simply substituted when using the name \lstinline{MacroName}.}
 \end{itemize}
+
+
+\begin{figure}[t]
+    \makebox[\textwidth][c]{\includegraphics[scale=.55]{verifpal-internals}}
+    \centering
+    \caption{Verification process of Verifpal.\\ All credits to Nadim Kobeissi \cite{VerifpalManual}.}
+    \label{fig:verifpal-verification}
+\end{figure}
+
+\newpage
+\subsection{Verifpal}
+
+
+Let us start with Verifpal syntax by explaining the minimal working example of \cref{lst:verifpal-minimal}.
+
+\lstset{language=verifpal}
+\begin{lstlisting}[numbers=left,caption={Verifpal's minimal working example}, label={lst:verifpal-minimal}]
+attacker [active]
+
+principal Alice []
+principal Bob []
+
+queries []
+\end{lstlisting}
+
+The attacker can either be \lstinline{active} or \lstinline{passive}.
+Principals are the honest parties of the protocol. Between square brackets many constructs can be used, such as \lstinline{generates}, \lstinline{knows}, assignments and cryptographic primitives.
+Finally, in the query block we express security properties we want to check. Queries in Verifpal are limited to pre-defined ones: confidentiality, authentication, freshness, unlinkability and equivalence.
+Verifpal also supports phases, like Proverif.
+
+
+Verifpal does not support user-defined cryptographic primitives. Instead, it supports most of the conventional equational theories, such as Diffie-Hellman, (a)symmetric encryption, authenticated encryption, signatures, blinding and many more.
+
+\subsubsection{Verifpal solving algorithm}
+
+\Cref{fig:verifpal-verification} shows the process of protocol verification used by Verifpal. Let us briefly describe the 5 main steps:
+
+\begin{enumerate}
+    \item{\textbf{Gather values} - first of all, the attacker passively observes a protocol execution and gathers all the values shared on the public channel between parties;}
+    \item{\textbf{Populate attacker state} - gathered values are inserted into the attacker's state;}
+    \item{\textbf{Apply transformations} - the attacker applies the four transformations on all of the obtained value (see bottom-right squares);}
+    \item{\textbf{Prepare next mutations} - if the attacker has learnt new values, it creates a combinatorial table of all possible substitutions and uses it to derive a set of possible value substitutions;}
+    \item{\textbf{Mutate protocol executions} - finally, the attacker proceeds to execute the protocol, each time applying a mutation from the previous step. As long as the attacker learns new values, it returns to step 1.}
+\end{enumerate}
+
+Verifpal, after each stage, checks if any defined security property has been falsified (e.g. the attacker state contains a certain term).
+Notice that many other techniques and heuristics are used to avoid state space explosion (e.g. a space state too large to explore in reasonable time).
+
