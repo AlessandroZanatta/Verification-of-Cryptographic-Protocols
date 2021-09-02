@@ -2,14 +2,14 @@ attacker [active]
 
 // First of all, generate private and public keys
 principal Alice [
-    knows public A, B
+    knows public Alice, Bob
     generates NA, K_SA
     
     K_PA = G^K_SA // Compute public key
 ]
 
 principal Bob [
-    knows public A, B
+    knows public Alice, Bob
     generates NB, K_SB
 
     K_PB = G^K_SB // Compute public key
@@ -26,14 +26,16 @@ Bob -> Alice: K_PB
 //-----------------------//
 
 principal Alice [
-    c1 = PKE_ENC(K_PB, NA)
+    c1 = PKE_ENC(K_PB, CONCAT(Alice, NA))
 ]
 
 // Send nonce NA
 Alice -> Bob: c1
 
 principal Bob [
-    B_NA = PKE_DEC(K_SB, c1)
+    Alice_B, B_NA = SPLIT(PKE_DEC(K_SB, c1))?
+
+    _ = ASSERT(Alice_B, Alice)?
 
     c2 = PKE_ENC(K_PA, CONCAT(B_NA, NB))
 ]

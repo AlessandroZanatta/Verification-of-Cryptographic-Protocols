@@ -45,9 +45,9 @@ reduc forall m: bitstring, sk: PrivateKey;
 (* Principals functions                                                         *)
 (********************************************************************************)
 
-fun choosePrincipal(Principal, Principal, Principal): Principal
-    reduc forall X: Principal, Y: Principal; choosePrincipal(X,X,Y) = X
-    otherwise forall X: Principal, Y: Principal; choosePrincipal(Y,X,Y) = Y.
+fun isHonest(Principal, Principal, Principal): Principal
+    reduc forall X: Principal, Y: Principal; isHonest(X,X,Y) = X
+    otherwise forall X: Principal, Y: Principal; isHonest(Y,X,Y) = Y.
 
 fun chooseOtherPrincipal(Principal, Principal, Principal): Principal
     reduc forall X, Y: Principal; chooseOtherPrincipal(X,X,Y) = Y
@@ -148,7 +148,7 @@ let Initiator() =
     in(io, (X: Principal, rUser: Principal));
 
     (* We only accept honest initiators (which are not also the responder). *)
-    let iUser = choosePrincipal(X, Alice, Bob) in
+    let iUser = isHonest(X, Alice, Bob) in
     if iUser <> rUser then
 
         (* Get private key of the initiator and public key of the responder. *)
@@ -176,7 +176,7 @@ let Initiator() =
 let Responder() =
     (* Get responder identity. Responder is always honest. *)
     in(io, X: Principal);
-    let rUser = choosePrincipal(X, Alice, Bob) in
+    let rUser = isHonest(X, Alice, Bob) in
 
     (* And get his private key *)
     get PrivateKeyTable(=rUser, skR) in

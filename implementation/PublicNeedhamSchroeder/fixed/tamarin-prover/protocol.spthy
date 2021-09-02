@@ -14,7 +14,7 @@ begin
   /* Register a new key-pair for a principal $X */
   rule RegisterKey [color=#99C24D]:
       [ Fr(~sk), In(X) ]
-    --[ Eq(X, 'I', 'R') ]->
+    --[ Eq(X, 'Alice', 'Bob') ]->
       [ 
         !PrivateKey(X, ~sk), 
         !PublicKey(X, pk(~sk)), 
@@ -32,7 +32,7 @@ begin
 
   rule 1_Initiator [color=#41a9a9]:
     let
-      c1 = aenc(<'1', 'I', ~ni>, pk_R)
+      c1 = aenc(<'1', 'Alice', ~ni>, pk_R)
     in
       [ 
         /*
@@ -50,23 +50,23 @@ begin
     --[ Out_I_1(c1) ]->
       [ 
         Out(c1),
-        InitiatorState_1('I', R, pk_R, ~ni)
+        InitiatorState_1('Alice', R, pk_R, ~ni)
       ]
 
   rule 2_Responder [color=#4C6085]:
     let
       pk_R = pk(sk_R)
 
-      c1 = aenc(<'1', 'I', ni>, pk_R)
-      c2 = aenc(<'2', ni, ~nr, 'R'>, pk_I)
+      c1 = aenc(<'1', 'Alice', ni>, pk_R)
+      c2 = aenc(<'2', ni, ~nr, 'Bob'>, pk_I)
     in
       [ 
         /* Get private key of the (honest) responder */
-        !PrivateKey('R', sk_R),
+        !PrivateKey('Bob', sk_R),
         In(c1),
 
         /* Get the public key of the (honest) initiator */
-        !PublicKey('I', pk_I),
+        !PublicKey('Alice', pk_I),
 
         /* Generate responder's nonce */
         Fr(~nr)
@@ -74,11 +74,11 @@ begin
     --[
         In_R_2(c1, ni),
         Out_R_2(c2),
-        ResponderSendsNonce('I', 'R', ni, ~nr)
+        ResponderSendsNonce('Alice', 'Bob', ni, ~nr)
       ]->
       [ 
         Out(c2),
-        ResponderState_2('I', 'R', sk_R, pk_I, ni, ~nr)
+        ResponderState_2('Alice', 'Bob', sk_R, pk_I, ni, ~nr)
       ]
 
   rule 3_Initiator [color=#41a9a9]:
@@ -119,13 +119,13 @@ begin
 /********************************************************************************/
 
   /* 
-   * Register a key for an attacker chosen principal (which is not 'I' or 'R').
+   * Register a key for an attacker chosen principal (which is not 'Alice' or 'Bob').
    * This is very similar to RegisterKey, with the difference that the private key is
    * sent to the public channel.
    */
   rule RegisterAttackerKey:
       [ Fr(~sk), In(X) ]
-    --[ NotEq(X, 'I', 'R') ]->
+    --[ NotEq(X, 'Alice', 'Bob') ]->
       [ 
         !PublicKey(X, pk(~sk)), 
         !PrivateKey(X, ~sk), 
