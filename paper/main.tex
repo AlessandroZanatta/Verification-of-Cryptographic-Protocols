@@ -118,8 +118,19 @@
 \newcommand{\apicevent}[2]{\ensuremath{\mbox{event}\ \mbox{#1}\left(#2\right)}}
 \newcommand{\apictableget}[2]{\ensuremath{\mbox{get}\ #1\left(#2\right)\ in}}
 
-
-\usepackage{fixltx2e}
+% Cryptographic primitives
+\newcommand{\func}[2]{\ensuremath{\mbox{#1}\left(#2\right)}}
+\newcommand{\enc}[2]{\ensuremath{\left\{#1\right\}_{#2}}}
+\newcommand{\sha}[2]{\ensuremath{\func{sha#1}{#2}}}
+\newcommand{\kdf}[1]{\ensuremath{\func{kdf}{#1}}}
+\newcommand{\fpk}[1]{\ensuremath{\func{fpk}{#1}}}
+\newcommand{\hash}[1]{\ensuremath{\func{hash}{#1}}}
+\newcommand{\modexp}[3]{\ensuremath{#1^#2 \mod{#3}}}
+\newcommand{\key}[1]{\ensuremath{k_{#1}}}
+\newcommand{\pkey}[1]{\ensuremath{pk_{#1}}}
+\newcommand{\skey}[1]{\ensuremath{sk_{#1}}}
+\newcommand{\newkey}[1]{\ensuremath{k'_{#1}}}
+\newcommand{\group}[1]{\ensuremath{\Z_{#1}}}
 
 % ------------------ %
 % Languages listings %

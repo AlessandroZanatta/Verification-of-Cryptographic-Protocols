@@ -28,7 +28,7 @@ Finally, we model a Diffie-Hellman with post-compromise of ephemeral keys. This 
     \action*{\parbox{3.5cm}{\centering
         Knows $g, p$\\
         $c \in \Z$\\
-        $g_c := g ^ c \mod{p}$
+        $g_c := \modexp{g}{c}{p}$
     }}{client}
 
     \nextlevel[5]
@@ -38,8 +38,8 @@ Finally, we model a Diffie-Hellman with post-compromise of ephemeral keys. This 
     \action*{\parbox{3.5cm}{\centering
         Knows $g, p$\\
         $s \in \Z$\\
-        $g_s := g ^ s \mod{p}$\\
-        $K_{sc} := g_c ^ s \mod{p}$
+        $g_s := \modexp{g}{s}{p}$\\
+        $\skey{c} := \modexp{g_c}{s}{p}$
     }}{server}
 
     \nextlevel[6]
@@ -47,7 +47,7 @@ Finally, we model a Diffie-Hellman with post-compromise of ephemeral keys. This 
     \nextlevel
 
     \action*{\parbox{3.5cm}{\centering
-        $K_{cs} := g_s ^ c \mod{p}$
+        $\key{cs} := \modexp{g_s}{c}{p}$
     }}{client}
     \nextlevel
 
@@ -114,7 +114,8 @@ principal Server [
 ]
 \end{lstlisting}
 
-\subsection{Needham-Schroeder public-key protocol}
+\subsection{Needham-Schroeder Public Key protocol}
+\label{sec:NSPK}
 
 \begin{figure}[t]
     \setmscoptions
@@ -125,13 +126,13 @@ principal Server [
     \declinst{bob}{}{Bob}
     
     \action*{\parbox{3.5cm}{\centering
-        Knows $K_{SA}, K_{PA}$\\
-        Knows $K_{PB}$
+        Knows $\skey{A}, \pkey{A}$\\
+        Knows $\pkey{B}$
     }}{alice}
 
     \action*{\parbox{3.5cm}{\centering
-        Knows $K_{SB}, K_{PB}$\\
-        Knows $K_{PA}$
+        Knows $\skey{B}, \pkey{B}$\\
+        Knows $\pkey{A}$
     }}{bob}
     \nextlevel[4]
 
@@ -140,7 +141,7 @@ principal Server [
     }}{alice}
 
     \nextlevel[3]    
-    \mess{$\left\{N_A, A\right\}_{K_{PB}}$}{alice}{bob}
+    \mess{$\enc{N_A, A}{\pkey{B}}$}{alice}{bob}
     \nextlevel
 
 
@@ -149,22 +150,23 @@ principal Server [
     }}{bob}
 
     \nextlevel[3]
-    \mess{$\left\{N_A, N_B\right\}_{K_{PA}}$}{bob}{alice}
+    \mess{$\enc{N_A, N_B}{\pkey{A}}$}{bob}{alice}
     \nextlevel[2]
-    \mess{$\left\{N_B\right\}_{K_{PB}}$}{alice}{bob}
+    \mess{$\enc{N_B}{\pkey{B}}$}{alice}{bob}
 
     \end{msc}
 
     \centering
-    \caption{Simplified Needham-Schroeder Public-key protocol}
+    \caption{Simplified Needham-Schroeder Public Key protocol}
     \label{fig:NSPK}
 \end{figure}
 
-The next case-study is the Needham-Schroeder Public-key protocol. Two versions are considered: the flawed version and the fixed one (by Lowe \cite{NSPK_LoweGavin}). A schematic representation of the protocol is shown in \cref{fig:NSPK}, which assumes that clients already know each others public keys.
+The next case-study is the Needham-Schroeder Public Key protocol. Two versions are considered: the flawed version and the fixed one (by Lowe \cite{NSPK_LoweGavin}). A schematic representation of the flawed protocol is shown in \cref{fig:NSPK}, which assumes that clients already know each others public keys. In the fixed version, message 2 is changed from $\enc{N_A, N_B}{\pkey{A}}$ to $\enc{B, N_A, N_B}{\pkey{A}}$.
 
 \subsubsection{Implementation notes}
 
 In order to re-discover the attack, we model the protocol in a way that allows the attacker to decide whom the honest initiator executes the protocol with. The responder, however, only wishes to engage with the honest initiator.
+
 
 \paragraph{Flawed} 
 
@@ -192,4 +194,4 @@ Bob -> Alice: K_PB
 \end{lstlisting}
 
 
-\paragraph{Fixed}
+\paragraph{Fixed} No changes to the models were applied but the fix to the Needham-Schroeder Public Key protocol described at the start of \cref{sec:NSPK}.

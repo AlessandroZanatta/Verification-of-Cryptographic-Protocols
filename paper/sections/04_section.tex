@@ -16,7 +16,7 @@ In this section we will compare tools based on their usability, expressiveness a
 \input{tables/DHephemeral.tex}
 \input{tables/DHpfs.tex}
 \input{tables/PublicNeedhamSchroederfixed.tex}
-\input{tables/PublicNeedhamSchroederfixed.tex}
+\input{tables/PublicNeedhamSchroederflawed.tex}
 
 \subsection{Sound and complete?}
 
@@ -51,7 +51,7 @@ Proverif
 
 Verifpal
     Pros:
-        - Very simple to use (both model specification and queries), while being expressive enough for most use cases
+        - Very simple to use (both model specification and queries), while being expressive enough for most use cases (not for 3 parties DH)
         - Possibility to translate to proverif/coq (even though its limited)
         - Very intuitive language
     Cons:
@@ -63,7 +63,9 @@ Verifpal
         - Does NOT allow to express injectivity
         - Does NOT produce a graphical representation of traces automatically
         - Feels VERY different from other tools
+        - Impossible to model 3 parties DH exchange, for example
 
         - IS NOR SOUND NOR COMPLETE
+
 
 }
