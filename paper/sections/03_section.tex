@@ -162,12 +162,11 @@ principal Server [
     \label{fig:NSPK}
 \end{figure}
 
-The next case-study is the Needham-Schroeder Public Key protocol. Two versions are considered: the flawed version and the fixed one (by Lowe \cite{NSPK_LoweGavin}). A schematic representation of the flawed protocol is shown in \cref{fig:NSPK}, which assumes that clients already know each others public keys. In the fixed version, message 2 is changed from $\enc{N_A, N_B}{\pkey{A}}$ to $\enc{B, N_A, N_B}{\pkey{A}}$.
+The next case-study is the Needham-Schroeder Public Key protocol. Two versions are considered: the flawed version and the fixed one (by Lowe \cite{NSPK_LoweGavin}). A schematic representation of the flawed protocol is shown in \cref{fig:NSPK}, which assumes that clients already know each other's public keys. In the fixed version, message 2 is changed from $\enc{N_A, N_B}{\pkey{A}}$ to $\enc{B, N_A, N_B}{\pkey{A}}$.
 
 \subsubsection{Implementation notes}
 
 In order to re-discover the attack, we model the protocol in a way that allows the attacker to decide whom the honest initiator executes the protocol with. The responder, however, only wishes to engage with the honest initiator.
-
 
 \paragraph{Flawed} 
 
