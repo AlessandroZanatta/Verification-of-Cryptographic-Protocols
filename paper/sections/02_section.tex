@@ -12,9 +12,9 @@ In this section we are going to see a brief overview on the syntax and foundatio
 Let us start with Tamarin prover. For a more
 in-depth description and further information, see \cite{TamarinFoundations, TamarinFoundationsExtended, TamarinManual}.
 
-The security property model of Tamarin is based on labelled multiset rewriting rules to specify protocols and adversary capabilities, a guarded fragment\footnote{The guarded fragment used by Tamarin is basically a subset of formulas from the first order logic with additional constraints on the arguments. See \cite{FragmentFirstOrderLogicPaper} for a definition from a mathematical point of view.} of first order logic to specify security properties and functions and equational theories to model the algebraic properties of cryptographic protocols \cite{TamarinFoundations}. Additionally, every event in the security properties is annotated with a timepoint $t \in \Q$ and basic comparison of timepoints can be used.
+The security property model of Tamarin is based on \textbf{labelled multiset rewriting rules} to specify protocols and adversary capabilities, a \textbf{guarded fragment\footnote{The guarded fragment used by Tamarin is basically a subset of formulas from the first order logic with additional constraints on the arguments. See \cite{FragmentFirstOrderLogicPaper} for a definition from a mathematical point of view.} of first order logic} to specify security properties and functions and \textbf{equational theories} to model the algebraic properties of cryptographic protocols \cite{TamarinFoundations}. Additionally, every event in the security properties is annotated with a timepoint $t \in \Q$ and basic comparison of timepoints can be used.
 
-Tamarin then applies a constraint-solving algorithm based on backward-search and heuristics which tries to validate or falsify security properties.
+Tamarin then applies a constraint-solving algorithm based on \textbf{backward-search and heuristics} which tries to validate or falsify security properties.
 
 \subsubsection{Multiset rewriting system and state transitions}
 
@@ -22,29 +22,16 @@ Tamarin then applies a constraint-solving algorithm based on backward-search and
 
 \lstset{language=tamarin}
 \begin{itemize}
-    \item{\textbf{Terms} - which can be thought of as messages. Two built-in facts are used to model network I/O: \lstinline{In(x)} and \lstinline{Out(x)}. A third one, \lstinline{K(x)} is used to model attacker knowledge;}
-    \item{\textbf{Facts} - which model information in the protocol and are composed by terms;}
+    \item{\textbf{Terms} - which can be thought of as messages;}
+    \item{\textbf{Facts} - which model information in the protocol and are composed by terms. Two built-in facts are used to model network I/O: \lstinline{In(x)} and \lstinline{Out(x)}. A third one, \lstinline{K(x)} is used to model attacker knowledge;}
     \item{\textbf{State of the system} - which is represented using a \textit{multiset} of facts;}
     \item{\textbf{Transition rules} - which defines the possible transitions from one state to another. Multiset rewriting rules are written as $\msr{L}{A}{R}$, where $L$, $A$ and $R$ are multisets of facts, respectively called premises, actions and conclusions;}
     \item{\textbf{Trace} - a sequence $\left<A_1, \dots, A_n\right>$ of sets of ground facts (i.e. facts which do not contain any variable) denoting the sequence of \textit{actions} that happened during a protocol execution.}
 \end{itemize}
 
 \paragraph{State transitions}
-Consider a ground multiset rewriting rule $\msr{l}{a}{r}$. If we call the state of the system $S$, the trace $T$ and assuming $l \msrsubseteq S$, the new state of the system $S'$ can be defined as $S' = S \msrsetminus l \msrcup r$. Additionally, we append $a$ to the end of the current trace $T$. \textsuperscript{\#} denotes multisets set operations.
+Consider a ground multiset rewriting rule $\msr{l}{a}{r}$. If we call the state of the system $S$, the trace $T$ and assuming $l \msrsubseteq S$, the new state of the system $S'$ can be defined as $S' = S \msrsetminus l \msrcup r$. Additionally, we append $a$ to the end of the current trace $T$. \textsuperscript{\#} denotes multisets' set operations.
 
-\comment{
-    \subsubsection{Constraint-solving procedure}
-    \Cref{pseudocode:tamarin-solving-procedure} shows an high level view of the constraint-solving procedure of Tamarin. This solving procedure is based on a backward-search algorithm.
-
-    \begin{algorithm}
-        \begin{algorithmic}
-            \Function{Solve}{\textphi}
-            \EndFunction
-        \end{algorithmic}
-        \caption{Tamarin's constraint solving procedure}
-        \label{pseudocode:tamarin-solving-procedure}
-    \end{algorithm}
-}
 
 
 
@@ -56,7 +43,7 @@ Consider a ground multiset rewriting rule $\msr{l}{a}{r}$. If we call the state 
     \caption{Proverif verification method.\\Inspired by a representation from Bruno Blanchet \cite{SymbolicComputationalBlanchet}.}
     \label{fig:proverif-verification-method}
 \end{figure}
-Proverif protocols and security properties are based on an extended version of the \pic (the \textit{applied} \picnospace). The tool also allows the user to define constructors, destructors and equations\footnote{Destructors are basically used to de-construct some previously constructed term (e.g. decryption of an encrypted ciphertext), while equations represent term equality of some sort (e.g. commutativity of multiplication).}, which form the cryptographic primitives. The protocol is then automatically translated to a set of Horn-clauses. Using this abstract representation of the protocol (based on Horn-clauses), the Proverif verifier uses a resolution algorithm on such clauses that allows for verification of security properties \cite{SymbolicComputationalBlanchet}.
+Proverif protocols and security properties are based on an extended version of the \pic (the \textbf{applied \picnospace}). The tool also allows the user to define \textbf{constructors, destructors and equations}\footnote{Destructors are basically used to de-construct some previously constructed term (e.g. decryption of an encrypted ciphertext), while equations represent term equality of some sort (e.g. commutativity of multiplication).}, which form the cryptographic primitives. The protocol is then automatically translated to a \textbf{set of Horn-clauses}. Using this abstract representation of the protocol (based on Horn-clauses), the Proverif verifier uses a \textbf{resolution algorithm} on such clauses that allows for verification of security properties \cite{SymbolicComputationalBlanchet}.
 A graphical representation of the entire process is given in \cref{fig:proverif-verification-method}.
 
 A brief definition of the grammar of processes of the applied \pic is given in \cref{lst:apic-processes}, slightly modified to match the one actually used by Proverif.
@@ -85,7 +72,7 @@ There are many additions to this grammar, such as:
 \begin{itemize}
     \item{\lstinline{event EventName(...);} - allows to define a trace of events on which security properties can be defined;}
     \item{\lstinline{query event(EventName(...)).} - queries are used to define security properties. The reserved word \lstinline{attacker(x)} allows to ask Proverif if the attacker knows the term \lstinline{x};}
-    \item{\lstinline{phase t;} - allows to execute a process only after processes of phases \lstinline{< t} have been executed. Intuitively, \lstinline{t} can be thought of as a global clock and a process in phase \lstinline{t}  is active only during phase \lstinline{t};}
+    \item{\lstinline{phase t;} - allows to execute a process only after processes of phases \lstinline{< t} have been executed. Intuitively, \lstinline{t} can be thought of as a global clock and a process in phase \lstinline{t}  is active only during phase \lstinline{t}. Processes without an explicit phase belong to phase 0;}
     \item{\lstinline{let MacroName = P.} - allows to create a process macro, which is simply substituted when using the name \lstinline{MacroName}.}
 \end{itemize}
 
@@ -97,7 +84,7 @@ There are many additions to this grammar, such as:
     \label{fig:verifpal-verification}
 \end{figure}
 
-\newpage
+
 \subsection{Verifpal}
 
 

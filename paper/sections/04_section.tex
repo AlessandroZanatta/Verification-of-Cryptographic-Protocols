@@ -4,7 +4,7 @@
 
 \section{Tools comparison}
 \label{section:features-comparison}
-In this section we will compare tools based on their usability, expressiveness and efficiency.
+In this section we will compare tools based on their usability, expressiveness, efficiency, soundness and completeness.
 
 \subsection{Usability}
 Let us define usability as the easiness of modeling and specifying security properties of a certain protocol.
@@ -15,25 +15,34 @@ Meanwhile, Proverif and Tamarin both have a steep learning curve as the construc
 
 \subsection{Expressiveness}
 \Cref{tbl:expressiveness} shows expressiveness of analyzed tools.
+As we already noticed, all tools assume unbounded sessions. Tamarin's equational theory, with its complex Diffie-Hellman theory (which comprehends 6 equations), is way more expressive then the other two tools (in which only commutativity of exponents is possible).
+Proverif support to state is limited to tables, while Verifpal and Tamarin naturally support stateful principals (via different formalisms and syntaxes). Moreover, observational equivalence\footnote{Observational equivalence expresses that two systems appear the same to the environment.} is not supported by Verifpal (which only supports equivalence of terms), but it supports linkability\footnote{Verifpal uses the following definition \cite{VerifpalFoundations}: ``for two
+observed values, the adversary cannot distinguish between a protocol execution in
+which they belong to the same user and a protocol execution in which they belong to
+two different users''.}.
 
 \begin{table}[!ht]
-\renewcommand{\arraystretch}{1.5}
-\makebox[\textwidth][c]{
-    \begin{tabular}{c|c|c|c|c|c}
-    \multicolumn{1}{l|}{} & \textbf{Unbounded} & \textbf{Equational theory} & \textbf{State} & \textbf{Equivalence} & \textbf{Linkability} \\ \hline
-    \textbf{Tamarin}  & \fullcirc & \fullcirc & \fullcirc  & \fullcirc & \emptycirc \\ \hline
-    \textbf{Proverif} & \fullcirc & \halfcirc & \emptycirc & \fullcirc & \emptycirc \\ \hline
-    \textbf{Verifpal} & \fullcirc & \halfcirc & \fullcirc  & \halfcirc & \halfcirc
-    \end{tabular}
-}
 \label{tbl:expressiveness}
 \caption{Expressiveness of tools.}
+\renewcommand{\arraystretch}{1.5}
+\setlength\arrayrulewidth{1pt}
+\rowcolors{2}{gray!25}{white}
+\makebox[\textwidth][c]{
+    \scalebox{0.9}{
+        \begin{tabular}{c|ccccc}
+        \multicolumn{1}{l|}{} & \textbf{Unbounded} & \textbf{Equational theory} & \textbf{State} & \textbf{Obs. Equiv.} & \textbf{Linkability} \\ \hline
+        \textbf{Tamarin}  & \fullcirc & \fullcirc & \fullcirc & \fullcirc  & \emptycirc \\
+        \textbf{Proverif} & \fullcirc & \halfcirc & \halfcirc & \fullcirc  & \emptycirc \\
+        \textbf{Verifpal} & \fullcirc & \halfcirc & \fullcirc & \emptycirc & \fullcirc
+        \end{tabular}
+    }
+}
 \end{table}
 
 \subsection{Efficiency}
 \Cref{tab:DH,tab:NSPK} shows three metrics for each tool and protocol version: peak memory usage (in kb), elapsed time since start and cpu time (as system load). 
 
-As it can be seen, Tamarin memory usage is about 5 times the one of Proverif and Verifpal, while time to complete proofs is about two orders of magnitude. We can also notice that Proverif is a single-threaded prover\footnote{As cpu time is always $\leq 1$, this means that Proverif is using at most a single core.}
+As it can be seen, Tamarin memory usage is about 5 times the one of Proverif and Verifpal, while time to complete proofs is about two orders of magnitude higher. We can also notice that Proverif is a single-threaded prover\footnote{As cpu time is always $\leq 1$, this means that Proverif is using at most a single core.}, while Tamarin and Verifpal are extensively using all available cores\footnote{The benchmark system has a total of 4 cores.}.
 
 \input{tables/DH}
 \input{tables/NSPK}
@@ -49,15 +58,20 @@ Let us define, in an informal way, what soundness and completeness of formal ver
 Soundness and completeness of analyzed tools is summarized in \cref{tbl:sound-complete}.
 
 \begin{table}[!ht]
-\centering
-\begin{tabular}{c|c|c}
-\multicolumn{1}{l|}{} & \textbf{Soundness} & \textbf{Completeness}  \\ \hline
-\textbf{Tamarin prover} & \cmark & \cmark \\ \hline
-\textbf{Proverif}       & \cmark & \xmark \\ \hline
-\textbf{Verifpal}       & \xmark & \xmark
-\end{tabular}
 \caption{Soundness and completeness of Tamarin, Proverif and Verifpal.}
 \label{tbl:sound-complete}
+\centering
+\setlength\arrayrulewidth{1pt}
+\renewcommand{\arraystretch}{1.4}
+\rowcolors{2}{gray!25}{white}
+\scalebox{0.9}{
+    \begin{tabular}{c|cc}
+    \multicolumn{1}{l|}{} & \textbf{Soundness} & \textbf{Completeness}  \\ \hline
+    \textbf{Tamarin prover} & \cmark & \cmark \\
+    \textbf{Proverif}       & \cmark & \xmark \\
+    \textbf{Verifpal}       & \xmark & \xmark
+    \end{tabular}
+}
 \end{table}
 
 \comment{

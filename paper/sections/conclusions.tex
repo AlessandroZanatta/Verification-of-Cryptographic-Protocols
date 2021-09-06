@@ -5,4 +5,11 @@
 \section{Conclusions}
 \label{section:conclusions}
 
-Conclusions here
+We have analyzed two case studies and how three tools perform in modeling them: Tamarin prover, Proverif and Verifpal.
+
+After a comparison of usability, expressiveness, efficiency, soundness and completeness we can conclude that:
+\begin{itemize}
+    \item{\textbf{Tamarin prover} is a very complete prover, it is sound and complete and it is the most expressive tool. However, this comes at the price of a much lower efficiency and usability\footnote{Notice that there are many aspects of the usability of Tamarin that we have not discussed, such as source lemmas.}.}
+    \item{\textbf{Verifpal} is a young\footnote{Additionally, it is in beta version.} $-$ yet interesting $-$ tool. Its great usability makes it a good choice for a quick and dirty protocol analysis in the earlier phases of its development. Its future development might improve its expressiveness further but the tool has successfully modeled many real-world protocols and attacks.}
+    \item{Finally, \textbf{Proverif} is the right choice when one wants a \textit{balanced} tool. Model specification in Proverif is verbose but intuitive, despite the older language it uses. Its expressiveness, while not being as good as Tamarin's, is capable of capturing most $-$ if not all $-$ real-world protocols security properties. Moreover, Proverif is a mature tool, with more then 20 years of use.}
+\end{itemize}
