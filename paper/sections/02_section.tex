@@ -23,7 +23,7 @@ Tamarin then applies a constraint-solving algorithm based on \textbf{backward-se
 \lstset{language=tamarin}
 \begin{itemize}
     \item{\textbf{Terms} - which can be thought of as messages;}
-    \item{\textbf{Facts} - which model information in the protocol and are composed by terms. Two built-in facts are used to model network I/O: \lstinline{In(x)} and \lstinline{Out(x)}. A third one, \lstinline{K(x)} is used to model attacker knowledge;}
+    \item{\textbf{Facts} - which model information in the protocol and are composed by terms. Two built-in facts are used to model network I/O: \lstinline{In(x)} and \lstinline{Out(x)}. \lstinline{K(x)} is used to model attacker knowledge. Finally, \lstinline{Fr(x)} is used to model a fresh value \lstinline{x};}
     \item{\textbf{State of the system} - which is represented using a \textit{multiset} of facts;}
     \item{\textbf{Transition rules} - which defines the possible transitions from one state to another. Multiset rewriting rules are written as $\msr{L}{A}{R}$, where $L$, $A$ and $R$ are multisets of facts, respectively called premises, actions and conclusions;}
     \item{\textbf{Trace} - a sequence $\left<A_1, \dots, A_n\right>$ of sets of ground facts (i.e. facts which do not contain any variable) denoting the sequence of \textit{actions} that happened during a protocol execution.}
@@ -85,8 +85,10 @@ There are many additions to this grammar, such as:
 \end{figure}
 
 
-\subsection{Verifpal}
 
+
+\newpage
+\subsection{Verifpal}
 
 Let us start with Verifpal syntax by explaining the minimal working example of \cref{lst:verifpal-minimal}.
 
@@ -100,9 +102,9 @@ principal Bob []
 queries []
 \end{lstlisting}
 
-The attacker can either be \lstinline{active} or \lstinline{passive}.
+The \lstinline{attacker} can either be \lstinline{active} or \lstinline{passive}.
 Principals are the honest parties of the protocol. Many constructs can be used between square brackets, such as \lstinline{generates}, \lstinline{knows}, assignments and cryptographic primitives.
-Finally, in the query block we express security properties we want to check. Queries in Verifpal are limited to pre-defined ones: confidentiality, authentication, freshness, unlinkability and equivalence.
+Finally, in the \lstinline{queries} block we express security properties we want to check. Queries in Verifpal are limited to pre-defined ones: confidentiality, authentication, freshness, unlinkability and equivalence.
 Verifpal also supports phases, like Proverif.
 
 

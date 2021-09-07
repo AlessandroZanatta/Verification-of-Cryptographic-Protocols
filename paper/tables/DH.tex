@@ -1,14 +1,12 @@
 
 \begin{table}[!ht]
-\caption{Comparison table for Diffie-Hellman.}
-\label{tab:DH}
 \setlength\arrayrulewidth{1pt}
 \rowcolors{2}{gray!25}{white}
 \makebox[\textwidth][c]{
     \scalebox{0.9}{
     \begin{tabular}{c|ccc|ccc|ccc|l}
     \cline{2-10}
-    \multicolumn{1}{l|}{} & \multicolumn{3}{c|}{\textbf{Peak memory size (kb)}} & \multicolumn{3}{c|}{\textbf{Time (s)}} & \multicolumn{3}{c|}{\textbf{CPU time}} &  \\ \cline{2-10}
+    \multicolumn{1}{l|}{} & \multicolumn{3}{c|}{\textbf{Peak memory size (kb)}} & \multicolumn{3}{c|}{\textbf{Time (ms)}} & \multicolumn{3}{c|}{\textbf{CPU time}} &  \\ \cline{2-10}
     \multicolumn{1}{l|}{}                    & Tamarin & Verifpal & Proverif & Tamarin & Verifpal & Proverif & Tamarin & Verifpal & Proverif & \\ \hline
     \multicolumn{1}{c|}{Mean}      & 52445 & 11480 & 10639 & 1136 & 13  & 44  & 3.52 & 2.08 & 0.98 & \multicolumn{1}{c}{} \\ \cline{1-10}
     \multicolumn{1}{c|}{Deviation} & 2541  & 244   & 108   & 106  & 1   & 1   & 0.06 & 0.12 & 0.02 & \multicolumn{1}{c}{} \\ \cline{1-10}
@@ -24,4 +22,6 @@
     \end{tabular}
     }
 }
+\caption{Comparison table for Diffie-Hellman.}
+\label{tab:DH}
 \end{table}

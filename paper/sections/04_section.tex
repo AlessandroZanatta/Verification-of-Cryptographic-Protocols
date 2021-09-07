@@ -7,23 +7,59 @@
 In this section we will compare tools based on their usability, expressiveness, efficiency, soundness and completeness.
 
 \subsection{Usability}
-Let us define usability as the easiness of modeling and specifying security properties of a certain protocol.
+Let us define usability as the \textbf{easiness of modeling} and specifying security properties of a certain protocol, as well as how easy it is to interpret the \textbf{tool output}, especially when an attack trace is found.
 
-As Verifpal manual also states \cite{VerifpalManual}, ``Verifpal's main aim is to appeal more to real-world practitioners, students and engineers without sacrificing comprehensive formal verification features''. Its language is extremely simple and fast to learn, queries and equational theory, while restrictive, are usually expressive enough for most cases.
-
+\paragraph{Modeling protocols}
+As Verifpal manual also states \cite{VerifpalManual}, ``Verifpal's main aim is to appeal more to real-world practitioners, students and engineers without sacrificing comprehensive formal verification features''. Its language is extremely simple and fast to learn, queries and equational theory, while severely restricted, are usually expressive enough for most cases.
 Meanwhile, Proverif and Tamarin both have a steep learning curve as the constructs they are based on can be challenging to grasp at first. Of course, such a statement is hard to prove and has to be partially taken as a personal indication.
+
+Verifpal additionally has a VS-Code extension which enhances the modeling experience with a real-time graph of the protocol being modeled. \Cref{fig:verifpal-protocol-graph} shows the graph for the Anonymous Diffie-Hellman protocol.
+
+\begin{figure}[t]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[scale=.45]{verifpal-protocol-graph}}
+    \caption{Verifpal's graph using VS-Code plugin.}
+    \label{fig:verifpal-protocol-graph}
+\end{figure}
+
+
+\paragraph{Attack traces}
+Finally, let us compare tool outputs when an attack trace is found. Verifpal states that its trace is easier to read compared to other tools. Considering a solely textual attack trace in \cref{fig:attack-trace}, it is actually true that Verifpal's trace is easier to understand for an un-experienced user as it indicates what messages were mutated by the adversary.
+
+\begin{figure}[t]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[scale=.65]{attack-trace-comparison}}
+    \caption{}
+    \label{fig:attack-trace}
+\end{figure}
+
+However, Tamarin and Proverif also offer a graph view of the attack, which is far more readable. Tamarin traces, which are offered from its interactive web app, are slightly customizable and can be made more or less verbose. An example is given in \cref{fig:tamarin-trace,fig:proverif-trace}.
+
+
+\begin{figure}[t]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[scale=.75]{tamarin-trace}}
+    \caption{Tamarin's attack trace graph view example.}
+    \label{fig:tamarin-trace}
+\end{figure}
+\begin{figure}[t]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[scale=.3]{proverif-trace}}
+    \caption{Proverif's attack trace graph view example.}
+    \label{fig:proverif-trace}
+\end{figure}
+
 
 \subsection{Expressiveness}
 \Cref{tbl:expressiveness} shows expressiveness of analyzed tools.
-As we already noticed, all tools assume unbounded sessions. Tamarin's equational theory, with its complex Diffie-Hellman theory (which comprehends 6 equations), is way more expressive then the other two tools (in which only commutativity of exponents is possible).
-Proverif support to state is limited to tables, while Verifpal and Tamarin naturally support stateful principals (via different formalisms and syntaxes). Moreover, observational equivalence\footnote{Observational equivalence expresses that two systems appear the same to the environment.} is not supported by Verifpal (which only supports equivalence of terms), but it supports linkability\footnote{Verifpal uses the following definition \cite{VerifpalFoundations}: ``for two
+As we already noticed, all tools assume unbounded sessions. Tamarin's equational theory, with its complex Diffie-Hellman theory (which comprehends 6 equations, including inverse), is way more expressive then the other two tools (in which only commutativity of exponents is possible). Verifpal additionally puts a cap on the number of exponentiations to two, which is not high enough to model Diffie-Hellman with three or more parties \cite{MultipartyDH}. 
+
+Proverif support to state is limited to tables, while Tamarin and Verifpal naturally support stateful principals (via different formalisms and syntaxes). Moreover, observational equivalence\footnote{Observational equivalence expresses that two systems appear the same to the environment.} is not supported by Verifpal (which only supports equivalence of terms), but it supports linkability\footnote{Verifpal uses the following definition \cite{VerifpalFoundations}: ``for two
 observed values, the adversary cannot distinguish between a protocol execution in
 which they belong to the same user and a protocol execution in which they belong to
 two different users''.}.
 
 \begin{table}[!ht]
-\label{tbl:expressiveness}
-\caption{Expressiveness of tools.}
 \renewcommand{\arraystretch}{1.5}
 \setlength\arrayrulewidth{1pt}
 \rowcolors{2}{gray!25}{white}
@@ -37,16 +73,19 @@ two different users''.}.
         \end{tabular}
     }
 }
+\caption{Expressiveness of tools.}
+\label{tbl:expressiveness}
 \end{table}
 
 \subsection{Efficiency}
 \Cref{tab:DH,tab:NSPK} shows three metrics for each tool and protocol version: peak memory usage (in kb), elapsed time since start and cpu time (as system load). 
 
-As it can be seen, Tamarin memory usage is about 5 times the one of Proverif and Verifpal, while time to complete proofs is about two orders of magnitude higher. We can also notice that Proverif is a single-threaded prover\footnote{As cpu time is always $\leq 1$, this means that Proverif is using at most a single core.}, while Tamarin and Verifpal are extensively using all available cores\footnote{The benchmark system has a total of 4 cores.}.
+As it can be seen, Tamarin memory usage is about 3 to 5 times the one of Proverif and Verifpal, while time to complete proofs is about one to two orders of magnitude higher. We can also notice that Proverif is a single-threaded prover\footnote{As cpu time is always $\leq 1$, this means that Proverif is using at most a single core.}, while Tamarin and Verifpal are extensively using all available cores\footnote{The benchmark system has a total of 4 cores.}.
 
 \input{tables/DH}
 \input{tables/NSPK}
 
+\newpage
 \subsection{Sound and complete?}
 
 Let us define, in an informal way, what soundness and completeness of formal verification tools means. Please refer to \cite{Furer89oncompleteness} for a more detailed description.
@@ -58,8 +97,6 @@ Let us define, in an informal way, what soundness and completeness of formal ver
 Soundness and completeness of analyzed tools is summarized in \cref{tbl:sound-complete}.
 
 \begin{table}[!ht]
-\caption{Soundness and completeness of Tamarin, Proverif and Verifpal.}
-\label{tbl:sound-complete}
 \centering
 \setlength\arrayrulewidth{1pt}
 \renewcommand{\arraystretch}{1.4}
@@ -72,6 +109,8 @@ Soundness and completeness of analyzed tools is summarized in \cref{tbl:sound-co
     \textbf{Verifpal}       & \xmark & \xmark
     \end{tabular}
 }
+\caption{Soundness and completeness of Tamarin, Proverif and Verifpal.}
+\label{tbl:sound-complete}
 \end{table}
 
 \comment{
