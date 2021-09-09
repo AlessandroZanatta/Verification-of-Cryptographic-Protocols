@@ -85,7 +85,10 @@
 
 \graphicspath{{logos/},{images/}} % Images folder(s)
 
-\captionsetup{skip=0pt}
+\captionsetup[table]{name=}
+\captionsetup[figure]{name=}
+\captionsetup{skip=5pt,font=scriptsize,labelfont=scriptsize}
+
 \setbeamercolor{alerted text}{fg=white}
 \sethlcolor{UniOrange}
 \renewcommand<>{\hl}[1]{\only#2{\beameroriginal{\hl}}{#1}}
@@ -179,7 +182,7 @@
   keywordstyle=[2]\itshape,
   keywordstyle=[3]\color{Green}\bfseries,
   keywordstyle=[4]\color{RedViolet}\bfseries,
-  keywords={Out, In, K, KU, Fr},
+  keywords={let, in, Out, In, K, KU, Fr},
   keywords=[2]{},
   keywords=[3]{},
   keywords=[4]{rule},
@@ -230,11 +233,11 @@
 \begin{document}
 
 \begin{frame}
-\titlepage
+  \titlepage
 \end{frame}
 
 \begin{frame}{Outline}
-\tableofcontents
+  \tableofcontents
 \end{frame}
 
 \section{Why?}
@@ -249,11 +252,11 @@
   \vskip 1cm
 
   \onslide<3->{Solution?}
-  
+
   \onslide<4>{\begin{center}
-    \LARGE\textbf{\textcolor{UniGold}{Formal verification of protocols!}}\par
-  \end{center}}
-  
+      \LARGE\textbf{\textcolor{UniGold}{Formal verification of protocols!}}\par
+    \end{center}}
+
 \end{frame}
 
 \section{How?}
@@ -288,23 +291,23 @@
     \item{Two primitives: $\mbox{enc}$, $\mbox{dec}$;}\pause
     \item{Two terms: $m$, $k$;}\pause
     \item{The following equality:
-      \begin{equation}
-        \mbox{dec}\left(\mbox{enc}\left(m, k\right), k\right) = m
-      \end{equation}
-    }
+                \begin{equation}
+                  \mbox{dec}\left(\mbox{enc}\left(m, k\right), k\right) = m
+                \end{equation}
+          }
   \end{itemize}
 
   \vskip 0.5cm
 
   \onslide<5>{
-  Under the \textcolor{UniGold}{perfect cryptography} assumption: 
-  \begin{center}
-    can decrypt $\mbox{enc}\left(m, k\right) \Longleftrightarrow k$ is known
-  \end{center}}
+    Under the \textcolor{UniGold}{perfect cryptography} assumption:
+    \begin{center}
+      can decrypt $\mbox{enc}\left(m, k\right) \Longleftrightarrow k$ is known
+    \end{center}}
 \end{frame}
 
 \begin{frame}[t]{Available tools}
-  Many tools:
+  Many automatic tools:
   \begin{itemize}
     \item{\myhl<2->{Tamarin prover}}
     \item{\myhl<2->{Proverif}}
@@ -318,18 +321,18 @@
 \end{frame}
 
 \section{Tamarin prover, Proverif and Verifpal}
-\framecard{Tamarin prover,\\Proverif and Verifpal}  
+\framecard{Tamarin prover,\\Proverif and Verifpal}
 
 \subsection{Tamarin prover}
 \begin{frame}{Tamarin prover}
   Based on \cite{TamarinFoundations,TamarinManual}:
   \begin{itemize}
-    \item{Protocol and adversary capabilities $\to$ \myhl<2->{Labelled multiset rewriting rules};}
-    \item{Security properties $\to$ Guarded fragment of first order logic (with timepoints);}
-    \item{Cryptographic primitives $\to$ Functions and equational theories;}
+    \item{Protocol and adversary capabilities $\to$ \myhl<5->{Labelled multiset rewriting rules};}\pause
+    \item{Security properties $\to$ Guarded fragment of first order logic (with timepoints);}\pause
+    \item{Cryptographic primitives $\to$ Functions and equational theories;}\pause
     \item{Verification $\to$ Constraint solving algorithm (backward-search and heuristics).}
   \end{itemize}
-  
+
 \end{frame}
 
 \begin{frame}[fragile]{Labelled multiset rewriting rules}
@@ -340,13 +343,13 @@
     \item{Special facts $\to$ \lstinline{In(x)}, \lstinline{Out(x)}, \lstinline{Fr(x)} and \lstinline{K(x)};}
     \item{State $\to$ Multiset of facts;}
     \item{Transition rules $\to$ allows transitions between states.
-    \begin{lstlisting}
+                \begin{lstlisting}
 rule ExampleRule:
-    [ Fr(x) ]
-  --[ ValueIsFresh(x)]->
-    [ Out(x) ]
+    [ PremiseFact(x) ]
+  --[ ActionFact(x)]->
+    [ ConclusionFact(x) ]
     \end{lstlisting}}
-    \item{Trace $\to$ a sequence of (ground) facts denoting the sequence of actions happened.}
+    \item{Trace $\to$ sequence of (ground) facts.}
   \end{itemize}
 \end{frame}
 
@@ -363,14 +366,20 @@ rule ExampleRule:
 \end{frame}
 
 \subsection{Proverif}
-\begin{frame}{Proverif}
+\begin{frame}{Proverif I}
   Based on \cite{ProverifFoundations}:
   \begin{itemize}
-    \item{Protocol and adversary capabilities $\to$ \myhl<2->{\hbox{Applied \picnospace}};}
-    \item{Security properties $\to$ Queries on events (resembles propositional logic);}
-    \item{Cryptographic primitives $\to$ Constructors, destructors and equations;}
+    \item{Protocol and adversary capabilities $\to$ \myhl<5->{\hbox{Applied \picnospace}};}\pause
+    \item{Security properties $\to$ Queries on events (resembles propositional logic);}\pause
+    \item{Cryptographic primitives $\to$ Constructors, destructors and equations;}\pause
     \item{Verification $\to$ Resolution algorithm applied on the protocol translation to Horn clauses.}
   \end{itemize}
+\end{frame}
+\begin{frame}{Proverif II}
+  \begin{figure}
+    \includegraphics[scale=0.7]{proverif-verification-method}
+    \caption{Proverif's verification method.}
+  \end{figure}
 \end{frame}
 
 \begin{frame}[fragile]{Proverif's applied \picnospace}
@@ -385,7 +394,7 @@ P | Q                (* parallel composition *)
 new a: T; P          (* fresh value of sort T *)
 if M then P else Q   (* conditional *)
   \end{lstlisting}
-\vskip 0.5cm
+  \vskip 0.5cm
   Additionally:
   \begin{lstlisting}
 event EventName(x);        (* add event to trace *)
@@ -401,9 +410,9 @@ let x = M in P else Q.     (* assignment and pattern matching *)
   \lstset{language=verifpal,basicstyle=\footnotesize\ttfamily}
   Based on \cite{VerifpalManual,VerifpalFoundations}:
   \begin{itemize}
-    \item{Protocol and adversary capabilities $\to$ \lstinline{principal} blocks and messages exchanges;}
-    \item{Security properties $\to$ \lstinline{queries} block;}
-    \item{Cryptographic primitives $\to$ pre-defined (no user-defined ones);}
+    \item{Protocol and adversary capabilities $\to$ \lstinline{principal} blocks and message exchanges;}\pause
+    \item{Security properties $\to$ \lstinline{queries} block;}\pause
+    \item{Cryptographic primitives $\to$ pre-defined (no user-defined ones);}\pause
     \item{Verification $\to$ Resolution algorithm in slide \ref{frame:verifpal-res-alg}.}
   \end{itemize}
 \end{frame}
@@ -419,43 +428,42 @@ principal Bob []
 
 queries []
   \end{lstlisting}
-
   \pause
   \lstset{language=verifpal,basicstyle=\footnotesize\ttfamily}
   Constructs:
   \begin{itemize}
     \item{\lstinline{attacker} $\to$ \lstinline{active} or \lstinline{passive};}\pause
     \item{Inside a \lstinline{principal} block:
-      \begin{itemize}
-        \item{\lstinline{generates}}
-        \item{\lstinline{knows}}
-        \item{\lstinline{leaks}}
-        \item{assignments}
-        \item{cryptographic primitives}
-      \end{itemize}
-    }\pause
+                \begin{itemize}
+                  \item{\lstinline{generates}, \lstinline{knows}, \lstinline{leaks}}
+                  \item{assignments}
+                  \item{cryptographic primitives}
+                \end{itemize}
+          }\pause
     \item{\lstinline{queries} $\to$ confidentiality, authentication, freshness, unlinkability and equivalence.}
   \end{itemize}
 \end{frame}
 
 \begin{frame}[label={frame:verifpal-res-alg}]{Resolution steps}
   \begin{figure}
-    \includegraphics[scale=.30]{verifpal-internals}
+    \vspace*{-0.2cm}
+    \includegraphics[scale=.35]{verifpal-internals}
     \caption{All credits to Nadim Kobeissi.}
   \end{figure}
+  \vspace*{-0.8cm}
   \begin{multicols}{2}
-  \begin{enumerate}
-    \item{Gather values;}
-    \item{Populate attacker state;}
-    \item{Apply transformations;}
-    \item{Prepare next mutations;}
-    \item{Mutate protocol executions.}
-  \end{enumerate}
+    \begin{enumerate}
+      \item{Gather values;}
+      \item{Populate attacker state;}
+      \item{Apply transformations;}
+      \item{Prepare next mutations;}
+      \item{Mutate protocol executions.}
+    \end{enumerate}
   \end{multicols}
 \end{frame}
 
 \section{Case studies}
-\framecard{Case studies:\\Diffie-Hellman and\\Needham-Schroeder Public Key}
+\framecard[UniBlue]{Case studies:\\Diffie-Hellman and\\Needham-Schroeder Public Key}
 
 \begin{frame}{Case studies}
   Two case studies:
@@ -463,11 +471,11 @@ queries []
     \item{Diffie-Hellman}
     \item{Needham-Schroeder Public Key}
   \end{itemize}
-  
+
   \vskip 1cm
-  
+
   \begin{block}{Source code}
-  The source code of the case studies in the next few slides is available on github \cite{CaseStudies}.
+    The source code of the case studies in the next few slides is available on github \cite{CaseStudies}.
   \end{block}
 \end{frame}
 
@@ -479,47 +487,47 @@ queries []
     \begin{itemize}
       \item{Anonymous}
       \item{Ephemeral}
-      \item{Perfect Forward Secrecy Ephemeral}
+      \item{Post-Compromise Ephemeral}
     \end{itemize}
     \column{0.4\textwidth}
     \begin{figure}[t]
       \setmscoptions
       \begin{msc}{}
-      \setmscscale{.5} 
-      
-      \declinst{client}{}{Client}
-      \declinst{server}{}{Server}
-      
-      \action*{\parbox{3.5cm}{\centering
-          Knows $g, p$\\
-          $c \in \Z$\\
-          $g_c := \modexp{g}{c}{p}$
-      }}{client}
+        \setmscscale{.5}
 
-      \nextlevel[5]
-      \mess{$g_c$}{client}{server}
-      \nextlevel
+        \declinst{client}{}{Client}
+        \declinst{server}{}{Server}
 
-      \action*{\parbox{3.5cm}{\centering
-          Knows $g, p$\\
-          $s \in \Z$\\
-          $g_s := \modexp{g}{s}{p}$\\
-          $\skey{c} := \modexp{g_c}{s}{p}$
-      }}{server}
+        \action*{\parbox{3.5cm}{\centering
+            Knows $g, p$\\
+            $c \in \Z$\\
+            $g_c := \modexp{g}{c}{p}$
+          }}{client}
 
-      \nextlevel[6]
-      \mess{$g_s$}{server}{client}
-      \nextlevel
+        \nextlevel[5]
+        \mess{$g_c$}{client}{server}
+        \nextlevel
 
-      \action*{\parbox{3.5cm}{\centering
-          $\key{cs} := \modexp{g_s}{c}{p}$
-      }}{client}
-      \nextlevel
+        \action*{\parbox{3.5cm}{\centering
+            Knows $g, p$\\
+            $s \in \Z$\\
+            $g_s := \modexp{g}{s}{p}$\\
+            $\skey{c} := \modexp{g_c}{s}{p}$
+          }}{server}
+
+        \nextlevel[6]
+        \mess{$g_s$}{server}{client}
+        \nextlevel
+
+        \action*{\parbox{3.5cm}{\centering
+            $\key{cs} := \modexp{g_s}{c}{p}$
+          }}{client}
+        \nextlevel
 
       \end{msc}
       \centering
     \end{figure}
-\end{columns}
+  \end{columns}
 \end{frame}
 
 \begin{frame}[fragile]{Anonymous Diffie-Hellman}
@@ -539,8 +547,8 @@ queries []
   \begin{columns}[onlytextwidth,t]
     \hspace*{-.60cm}
     \begin{column}{0.5\paperwidth}
-    \centering
-    \lstset{language=tamarin}
+      \centering
+      \lstset{language=tamarin}
       \begin{lstlisting}
 /* Send a message from client to server */
 rule ClientSendMessage:
@@ -575,13 +583,13 @@ let ClientSendsMessage() =
   Server half key needs to be authenticated:
   \begin{itemize}
     \item{Tamarin $\to$ private channel with passive attacker:
-      \begin{lstlisting}[language=tamarin]
+                \begin{lstlisting}[language=tamarin]
 rule CertificateExchange:
     [ CertificateOut(x) ] --> [ CertificateIn(x), Out(x) ]
       \end{lstlisting}
-    }
+          }
     \item{Proverif $\to$ table (output every value we insert):
-    \begin{lstlisting}[language=proverif]
+                \begin{lstlisting}[language=proverif]
 table AuthenticatedValueTable(G).
 
 let Server() =
@@ -590,30 +598,30 @@ let Server() =
   out(io, g_r);
 ...
     \end{lstlisting}
-    }
+          }
     \item{Verifpal $\to$ guarded variables (between square brackets):
-    \begin{lstlisting}[language=verifpal]
+                \begin{lstlisting}[language=verifpal]
 Server -> Client: [g_s], c1
     \end{lstlisting}
-    }
+          }
   \end{itemize}
 \end{frame}
 
-\begin{frame}[t,fragile,allowframebreaks]{PFS Ephemeral Diffie-Hellman}
+\begin{frame}[t,fragile]{Post-Compromise Ephemeral DH I}
   We model the leakage of ephemeral keys:
   \begin{itemize}
     \item{Tamarin $\to$ Fact for the ephemeral key, rule to output it:
-      \begin{lstlisting}[language=tamarin]
+                \begin{lstlisting}[language=tamarin]
 rule RevealClientEphemeralKey:
     [ ClientEphemeralKey(c) ]
   --[ RevealedClientEphemeralKey(c) ]->
     [ Out(c) ]
       \end{lstlisting}
-      Use lemma timepoints to leak the value after a certain event;
-    }
+                Use lemma timepoints to leak the value after a certain action fact;
+          }
     \lstset{language=proverif}
     \item{Proverif $\to$ create a process in \lstinline{phase 1}:
-    \begin{lstlisting}
+                \begin{lstlisting}
 let PostRevealClientEphemeralKey =
   phase 1;
   (* Get the client's ephemeral key and output it *)
@@ -622,8 +630,13 @@ let PostRevealClientEphemeralKey =
   event PostRevealedClientEphemeralKeyTable(c);
   0.
     \end{lstlisting}
-    }
-    \lstset{language=verifpal}
+          }
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t,fragile]{Post-Compromise Ephemeral DH II}
+  \lstset{language=verifpal}
+  \begin{itemize}
     \item{Verifpal $\to$ very similar to Proverif, using \lstinline{phase} and \lstinline{leaks}:
     \begin{lstlisting}
 phase [1]
@@ -641,322 +654,333 @@ principal Server [
 \end{frame}
 
 \subsection{Needham-Schroeder Public Key}
-\begin{frame}{Needham-Schroeder Public Key}
-  \begin{columns}[onlytextwidth,c]
+\begin{frame}[t]{Needham-Schroeder Public Key}
+  \begin{columns}[T]
     \column{0.6\textwidth}
     We will consider two versions of the (simplified) Needham-Schroeder Public Key protocol:
     \begin{itemize}
       \item{Flawed}
-      \item{Fixed}
+      \item{Fixed: message 2 is changed from $\enc{NA, NB}{\pkey{A}}$ to $\enc{B, NA, NB}{\pkey{A}}$.}
     \end{itemize}
     \column{0.4\textwidth}
-    \begin{figure}[t]
+    \begin{figure}
+      \vspace*{-1cm}
       \setmscoptions
       \setlength{\instdist}{2cm}
       \begin{msc}{}
-      \setmscscale{.5} 
-      
-      \declinst{alice}{}{Alice}
-      \declinst{bob}{}{Bob}
-      
-      \action*{\parbox{3.5cm}{\centering
-          Knows $\skey{A}, \pkey{A}$\\
-          Knows $\pkey{B}$
-      }}{alice}
+        \setmscscale{.5}
 
-      \action*{\parbox{3.5cm}{\centering
-          Knows $\skey{B}, \pkey{B}$\\
-          Knows $\pkey{A}$
-      }}{bob}
-      \nextlevel[4]
+        \declinst{alice}{}{Alice}
+        \declinst{bob}{}{Bob}
 
-      \action*{\parbox{3.5cm}{\centering
-          Generates $N_A$
-      }}{alice}
+        \action*{\parbox{3.5cm}{\centering
+            Knows $\skey{A}, \pkey{A}$\\
+            Knows $\pkey{B}$
+          }}{alice}
 
-      \nextlevel[3]    
-      \mess{$\enc{N_A, A}{\pkey{B}}$}{alice}{bob}
-      \nextlevel
+        \action*{\parbox{3.5cm}{\centering
+            Knows $\skey{B}, \pkey{B}$\\
+            Knows $\pkey{A}$
+          }}{bob}
+        \nextlevel[4]
+
+        \action*{\parbox{3.5cm}{\centering
+            Generates $N_A$
+          }}{alice}
+
+        \nextlevel[3]
+        \mess{$\enc{N_A, A}{\pkey{B}}$}{alice}{bob}
+        \nextlevel
 
 
-      \action*{\parbox{3.5cm}{\centering
-          Generates $N_B$
-      }}{bob}
+        \action*{\parbox{3.5cm}{\centering
+            Generates $N_B$
+          }}{bob}
 
-      \nextlevel[3]
-      \mess{$\enc{N_A, N_B}{\pkey{A}}$}{bob}{alice}
-      \nextlevel[2]
-      \mess{$\enc{N_B}{\pkey{B}}$}{alice}{bob}
+        \nextlevel[3]
+        \mess{$\enc{N_A, N_B}{\pkey{A}}$}{bob}{alice}
+        \nextlevel[2]
+        \mess{$\enc{N_B}{\pkey{B}}$}{alice}{bob}
 
       \end{msc}
-      \centering
     \end{figure}
   \end{columns}
+  \begin{block}{Important modelling trick}
+    We need to allow the attacker to decide whom the initiator executes the protocol with, otherwise we would not find the flaw.
+  \end{block}
+\end{frame}
+
+\begin{frame}[t,fragile]{Flawed NSPK protocol I}
+  Modelling attacker deciding responder:
+  \begin{itemize}
+    \item{Tamarin $\to$ we fix the initiator as Alice (i.e. the attacker chooses only the responder):
+                \begin{lstlisting}[language=tamarin]
+rule 1_Initiator:
+  let I = 'Alice' in
+    [        
+      /* Responder identity */
+      In(R),
+      /* Get public key of responder */
+      !PublicKey(R, pk_R),
+      ...
+    ]
+  --[...]->
+    [...]
+      \end{lstlisting}
+                Two rules are used to create the persistent fact for key pairs of both honest parties and attacker;
+          }
+  \end{itemize}
+\end{frame}
+\begin{frame}[t,fragile]{Flawed NSPK protocol II}
+  \begin{itemize}
+    \item{Proverif $\to$ in Proverif we let the attacker decide every participant identity:
+                \begin{lstlisting}[language=proverif]
+let Initiator() =
+  (* Attacker sends communicating parties *)
+  in(io, (X: Principal, rUser: Principal));
+  
+  (* We restrict them: X must be honest and they must differ *)
+  let iUser = isHonest(X, Alice, Bob) in
+  if iUser <> rUser then
+  
+  (* Get private key of initiator *)
+  get PrivateKeyTable(=iUser, skI) in
+
+  (* Get public key of responder *)
+  get PublicKeyTable(=rUser, pkR) in
+  ...
+      \end{lstlisting}
+                Similar to Tamarin, two processes create key pairs for honest parties and the attacker;
+          }
+  \end{itemize}
+\end{frame}
+\begin{frame}[t,fragile]{Flawed NSPK protocol III}
+  \begin{itemize}
+    \item{Verifpal $\to$ straightforward implementation, with a caveut. We need to pre-share public keys and responder's one must be unguarded.
+                \begin{lstlisting}[language=verifpal]
+Alice -> Bob: [K_PA]
+Bob -> Alice: K_PB
+\end{lstlisting}
+                This allows the attacker to mutate Bob's public key to its own, initiating the MITM.
+          }
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Fixed NSPK protocol}
+  No changes, apart from the protocol fix.
+
+  \vskip 1cm
+
+  Cannot model the fixed version in Verifpal as the tool seems to infer incorrect results ignoring checked primitives (see \cite{VerifpalManual}).
+\end{frame}
+
+\subsection{Results}
+\begin{frame}{Results}
+  Same results with every tool!
+
+  \vskip 0.5cm
+
+  \begin{table}
+    \renewcommand{\arraystretch}{1.4}
+    \rowcolors{2}{gray!25}{white}
+    \setlength\arrayrulewidth{1pt}
+    \makebox[\textwidth][c]{
+      \scalebox{0.6}{
+        \begin{tabular}{c|cc}
+          \multicolumn{1}{l|}{}    & \textbf{Secrecy} & \textbf{Authentication} \\ \hline
+          \textbf{Anonymous}       & \xmark           & \xmark                  \\
+          \textbf{Ephemeral}       & Client to server & Server to client        \\
+          \textbf{Post-compromise} & \xmark           & Server to client
+        \end{tabular}
+      }
+    }
+    \caption{Diffie-Hellman}
+  \end{table}
+
+  \begin{table}
+    \renewcommand{\arraystretch}{1.4}
+    \rowcolors{2}{gray!25}{white}
+    \setlength\arrayrulewidth{1pt}
+    \makebox[\textwidth][c]{
+      \scalebox{0.6}{
+        \begin{tabular}{c|cc}
+          \multicolumn{1}{l|}{} & \textbf{Nonces secrecy} & \textbf{Authentication} \\ \hline
+          \textbf{Flawed}       & \xmark                  & \xmark                  \\
+          \textbf{Fixed}        & \cmark                  & \cmark                  \\
+        \end{tabular}
+      }
+    }
+    \caption{Needham-Schroeder Public Key}
+  \end{table}
+\end{frame}
+
+\section{Tools comparison}
+\framecard[UniBrown]{Tools comparison}
+
+\begin{frame}{Tools comparison}
+  Five metrics:
+  \begin{itemize}
+    \item Usability;
+    \item Expressiveness;
+    \item Efficiency;
+    \item Soundness;
+    \item Completeness.
+  \end{itemize}
+\end{frame}
+
+\subsection{Usability}
+\begin{frame}[t]{Usability I}
+  Usability as:
+  \begin{columns}[t]
+    \begin{column}{0.6\textwidth}
+      \begin{itemize}
+        \item{Easiness of modeling:
+                    \begin{enumerate}
+                      \item<2->{Verifpal
+                                  \begin{itemize}
+                                    \item simple and intuitive language;
+                                    \item offers a very useful VS-Code extension;
+                                  \end{itemize}
+                            }
+                      \item<3->{Proverif
+                                  \begin{itemize}
+                                    \item steep learning curve;
+                                    \item challenging constructs to grasp;
+                                  \end{itemize}
+                            }
+                      \item<4->{Tamarin
+                                  \begin{itemize}
+                                    \item very steep learning curve;
+                                    \item challenging constructs to grasp;
+                                  \end{itemize}
+                            }
+                    \end{enumerate}}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \only<2->{
+        \begin{figure}
+          \vspace*{-1.6cm}
+          \includegraphics[scale=.38]{verifpal-protocol-graph}
+          \caption{Verifpal model graph in VS-Code}
+        \end{figure}
+      }
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[t]{Usability II}
+  \begin{itemize}
+    \item{Attack traces visualization:
+                \begin{itemize}
+                  \item<only@1> Textual
+                  \item<only@2> Graph view (only Tamarin and Proverif)
+                \end{itemize}
+          }
+  \end{itemize}
+
+  \begin{figure}
+    \vspace*{-0.3cm}
+    \includegraphics<1>[scale=.4]
+    {attack-trace-comparison}
+  \end{figure}
+  \vspace*{-1.6cm}
+  \only<2>{
+    \begin{columns}
+      \begin{column}{0.4\textwidth}
+        \begin{figure}
+          \includegraphics[scale=.35]{tamarin-trace}
+        \end{figure}
+      \end{column}
+      \begin{column}{0.6\textwidth}
+        \begin{figure}
+          \includegraphics[scale=.12]{proverif-trace}
+        \end{figure}
+      \end{column}
+    \end{columns}
+  }
+\end{frame}
+
+
+\subsection{Expressiveness}
+\begin{frame}{Expressiveness}
+  \vskip 0.5cm
+  \begin{overlayarea}{\textwidth}{\textheight}
+    \begin{overlayarea}{\textwidth}{.3\textheight}
+      \begin{table}[!ht]
+        \renewcommand{\arraystretch}{1.5}
+        \setlength\arrayrulewidth{1pt}
+        \rowcolors{2}{gray!25}{white}
+        \makebox[\textwidth][c]{
+          \scalebox{0.8}{
+            \begin{tabular}{c|ccccc}
+              \multicolumn{1}{l|}{} & \textbf{Unbounded} & \textbf{Equational theory} & \textbf{State} & \textbf{Obs. Equiv.} & \textbf{Linkability} \\ \hline
+              \textbf{Tamarin}      & \fullcirc          & \fullcirc                  & \fullcirc      & \fullcirc            & \emptycirc           \\
+              \textbf{Proverif}     & \fullcirc          & \halfcirc                  & \halfcirc      & \fullcirc            & \emptycirc           \\
+              \textbf{Verifpal}     & \fullcirc          & \halfcirc                  & \fullcirc      & \emptycirc           & \fullcirc
+            \end{tabular}
+          }
+        }
+      \end{table}
+    \end{overlayarea}
+
+    \only<2>{
+      \begin{overlayarea}{\textwidth}{.7\textheight}
+        \begin{block}{Observational equivalence}
+          Two systems appear the same to the environment. \textit{or}
+          Two entities are indistinguishable on the basis of their observable implications.
+        \end{block}
+      \end{overlayarea}
+    }
+
+    \only<3>{
+      \begin{overlayarea}{\textwidth}{.7\textheight}
+        \begin{block}{Linkability}
+          Following Verifpal's definition:
+          ``For two observed values, the adversary cannot distinguish between a protocol execution in which they belong to the same user and a protocol execution in which they belong to two different users''
+        \end{block}
+      \end{overlayarea}
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+\subsection{Efficiency}
+\begin{frame}[t]{Efficiency}
+  \vspace*{-0.5cm}
+  \include{tables/DH}\pause
+  \vspace*{-1.2cm}
+  \include{tables/NSPK}
+\end{frame}
+
+\subsection{Soundness and completeness}
+\begin{frame}{Soundness and completeness}
+  \begin{block}{Soundness}
+    Any statement that can be proved is valid (i.e. there is no proof for a false statement).
+  \end{block}
+  \pause
+  \begin{block}{Completeness}
+    The proof system is powerful enough to prove any valid statement.
+  \end{block}
+  \pause
+  \begin{table}[!ht]
+    \centering
+    \setlength\arrayrulewidth{1pt}
+    \renewcommand{\arraystretch}{1.4}
+    \rowcolors{2}{gray!25}{white}
+    \scalebox{0.9}{
+      \begin{tabular}{c|cc}
+        \multicolumn{1}{l|}{}   & \textbf{Soundness} & \textbf{Completeness} \\ \hline
+        \textbf{Tamarin prover} & \cmark             & \cmark                \\
+        \textbf{Proverif}       & \cmark             & \xmark                \\
+        \textbf{Verifpal}       & \xmark             & \xmark
+      \end{tabular}
+    }
+  \end{table}
 \end{frame}
 
 \begin{frame}[t,allowframebreaks]{Bibliography}
   \printbibliography
-\end{frame}
-
-
-%% -------------------------------------------------------------------------------- %%
-%% Preset slides start here                                                         %%
-%% -------------------------------------------------------------------------------- %%
-
-\section{Colors}
-
-\begin{frame}{Colors}
-
-For this template we defined four colors, following the Style Manual of the University of Udine:
-\begin{itemize}
-\item \textcolor{white}{\marker{\texttt{UniOrange}}}
-\item \textcolor{white}{\marker[UniBlue]{\texttt{UniBlue}}}
-\item \textcolor{white}{\marker[UniBrown]{\texttt{UniBrown}}}
-\item \textcolor{white}{\marker[UniGold]{\texttt{UniGold}}}
-\end{itemize}
-
-\vskip 0.5cm
-
-You can use these colors as you want in your presentation. For example, you can \textbf{\textcolor{UniGold}{color the text in gold}} by writing \texttt{\textbackslash\{UniGold\}\{my gold text\}}.
-
-\vskip 0.5cm
-
-We also redefined many of the most common \LaTeX{} and Beamer commands, like \texttt{itemize}, \texttt{block}, etc. You will see samples of these commands in the following slides.
-
-\end{frame}
-
-\section{Blocks}
-
-\begin{frame} 
-\frametitle{This is a page with a title and a subtitle} 
-\framesubtitle{And also some blocks.} 
-\begin{block}{Goal of the mission}
-Shoot in the Death Star's exhaust port and destroy it before the it can fire on the Rebel base.
-\end{block} 
-\begin{alertblock}{Take care!}
-TIE Fighters may chase you while approaching the target.
-\end{alertblock} 
-\begin{exampleblock}{Use the force you must}
-Remember your training with Obi-Wan, and use the Force to make the perfect shoot.
-\end{exampleblock} 
-
-\end{frame}
-
-\section{Enumerates, itemizes and description}
-
-\subsection{Enumerates and itemizes}
-
-\begin{frame}{Enumerates and itemizes}
-
-This is an example of \texttt{itemize}.
-\begin{itemize}
-	\item A long time ago in a galaxy far, far away...
-\end{itemize}
-And this is an example of \texttt{enumerate}.
-
-\begin{enumerate} 
-  \item Go to the Death Star.
-  \item Find the exhaust port.
-  \item Make the perfect shot.
-  \item Become an hero.
-\end{enumerate}
-\end{frame}
-
-\subsection{Description}
-
-\begin{frame}[fragile]
-\frametitle{Description}
-This is an example of \texttt{description}.
-
-\begin{description}
-\item<2->[Vader] \emph{I am} your father.
-\item<1->[Luke] No. No! That's not true! \textbf{That's impossible!}
-\end{description}
-
-\begin{uncoverenv}<3>
-  \vskip 0.5cm
-  And while we're here, let's have a look to \texttt{verbatim} as well, to see how we made items appear in arbitrary order:
-  \vskip 0.5cm
-  \begin{verbatim}
-\begin{description}
-  \item<2->[This is the first item] one
-  \item<1->[This is the second item] two
-\end{description}
-  \end{verbatim}
-\end{uncoverenv}
-
-\end{frame}
-
-\section{Maths}
-
-\begin{frame}{Maths}
-A formula will look like this: 
-\begin{center}
- $x^2 + y^2 = z^2$
-\end{center}
-
-You can number equations as well:
-\begin{equation}
-1+1=2
-\end{equation}
-
-\begin{equation}
-1+1=2 \tag{custom label!}
-\end{equation}
-
-\vskip 0.5cm
-
-If you want to use the default \LaTeX{} math fonts, just go to \texttt{beamerfontthemeuniud.sty} and uncomment the line containing `\texttt{\textbackslash usefonttheme[onlymath]\{serif\}}'.
-
-\end{frame}
-
-\begin{frame}{Theorems}
-
-The usual \texttt{theorem}, \texttt{corollary}, \texttt{definition}, \texttt{definitions}, \texttt{fact}, \texttt{example} and \texttt{examples} blocks are available as well.
-
-\begin{theorem}
-There exists an infinite set.
-\end{theorem}
-\begin{proof}
-This follows from the axiom of infinity.
-\end{proof}
-\begin{example}[Natural Numbers]
-The set of natural numbers is infinite.
-\end{example}
-
-\end{frame}
-
-\section{Other blocks}
-
-\begin{frame}{Other blocks}
-
-Here we display examples of \texttt{abstract}, \texttt{verse}, \texttt{quotation}, and \texttt{quote}.
-
-\vskip 0.5cm
-
-\begin{abstract}
-This is an abstract.
-\end{abstract}
-\begin{verse}
-This is a verse.
-\end{verse}
-\begin{quotation}
-This is a quotation.
-
-\raggedleft -Han Solo
-\end{quotation}
-\begin{quote}
-A quote this is.
-
-\raggedleft -Yoda
-\end{quote}
-
-\end{frame}
-
-\section{Bibliography and Publications}
-\begin{frame}[fragile]
-\frametitle{Bibliography}
-
-You can cite an article
-\begin{itemize}
-  \item{}
-\end{itemize}
-
-\vskip 0.5cm
-Look at the code of the following slide to see how to automatically split the bibliography on many slides. You can also use \texttt{\textbackslash nocite\{*\}} to display the non-cited publications as well.
-
-\end{frame}
-
-\begin{frame}[t,allowframebreaks]
-\frametitle{Bibliography}
-
-\nocite{*} % will display the non-cited publications as well. Useful for a publication list.
-
-\printbibliography
-
-\end{frame}
-
-\section{Bonus Commands}
-
-\begin{frame}[fragile]
-\frametitle{Framecard}
-
-You can display a frame with a colored background and a huge text in the center using the command \texttt{\textbackslash framecard}.
-\vskip 0.5cm 
-For example, you can write:
-\begin{verbatim}
-\framecard{A SECTION\\TITLE}
-\end{verbatim}
-
-This will display a frame with a orange background and the phrase "A SECTION TITTLE" in the center. You can also use a custom color with \texttt{\textbackslash framecard}:
-\begin{verbatim}
-\framecard{A SECTION\\TITLE}
-\framecard[UniBlue]{A SECTION TITLE\\
-WITH A CUSTOM COLOR}
-\end{verbatim}
-You can see the results of the commands above in the following slides.
-
-\end{frame}
-
-\framecard{A SECTION\\TITLE}
-\framecard[UniBlue]{A SECTION TITLE\\WITH A CUSTOM COLOR}
-
-\begin{frame}[fragile]
-\frametitle{Framepic}
-
-You can display a frame with a background image using the command \texttt{\textbackslash framepic}. The image will be \textbf{adapted vertically} to fit the the frame. 
-
-For example, you can write:
-\begin{verbatim}
-\framepic{graphics/darth}{
-	\framefill
-    \textcolor{white}{Luke,\\I am your supervisor}
-    \vskip 0.5cm
-}
-\end{verbatim}
-
-Alternatively, to make the background 50\% transparent, you can write \texttt{\textbackslash framepic[0.5]\{graphics/darth\}...}
-
-
-You can see the results of the commands above in the following slides.
-
-\end{frame}
-
-
-\framepic{graphics/darth}{
-	\framefill
-    \textcolor{white}{Luke,\\I am your supervisor}
-    \vskip 0.5cm
-}
-
-\framepic[0.5]{graphics/darth}{
-	\vfill
-    \begin{flushright}
-    \textcolor{red}{\textbf{Right-aligned text with\\Semi-transparent background}}
-    \end{flushright}	
-}
-
-\begin{frame}[t,fragile,allowframebreaks]
-\frametitle{Other bonus commands}
-
-We provide two other bonus commands:
-\begin{description}
-\item[\texttt{pdfnewline}] you can use \texttt{\textbackslash pdfnewline} to avoid the annoying \texttt{hyperref} related warnings when using newlines in the document's title, author, etc. For example, in this presentation the author is defined as:
-\begin{verbatim}
-\author[Luke Skywalker]{
-  Luke Skywalker, Ph.D.
-  \pdfnewline
-  \texttt{luke.skywalker@uniud.it}
-}
-\end{verbatim}
-\item[\texttt{marker}] you can use \texttt{\textbackslash marker} to highlight some text. The default color is \marker{orange}, but you can also \marker[UniBlue]{use a custom color}. For example:
-\begin{verbatim}
-\marker{Default color}
-\marker[UniBlue]{Custom Color}
-\end{verbatim}
-\item[\texttt{framefill}] you can use \texttt{\textbackslash framefill} to put the text at the bottom of a slide by filling all the vertical space.
-\end{description}
-
 \end{frame}
 
 \end{document}

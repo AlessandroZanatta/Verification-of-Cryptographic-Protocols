@@ -1,0 +1,27 @@
+
+\begin{table}[!ht]
+    \setlength\arrayrulewidth{1pt}
+    \rowcolors{2}{gray!25}{white}
+    \makebox[\textwidth][c]{
+        \scalebox{0.6}{
+            \begin{tabular}{c|ccc|ccc|ccc|l}
+                \cline{2-10}
+                \multicolumn{1}{l|}{}          & \multicolumn{3}{c|}{\textbf{Peak memory size (kb)}} & \multicolumn{3}{c|}{\textbf{Time (ms)}} & \multicolumn{3}{c|}{\textbf{CPU time}} &                                                                                                                                                                \\ \cline{2-10}
+                \multicolumn{1}{l|}{}          & Tamarin                                             & Verifpal                                & Proverif                               & Tamarin & Verifpal & Proverif & Tamarin & Verifpal & Proverif &                                                                                                \\ \hline
+                \multicolumn{1}{c|}{Mean}      & 52445                                               & 11480                                   & 10639                                  & 1136    & 13       & 44       & 3.52    & 2.08     & 0.98     & \multicolumn{1}{c}{}                                                                           \\ \cline{1-10}
+                \multicolumn{1}{c|}{Deviation} & 2541                                                & 244                                     & 108                                    & 106     & 1        & 1        & 0.06    & 0.12     & 0.02     & \multicolumn{1}{c}{}                                                                           \\ \cline{1-10}
+                \multicolumn{1}{c|}{Median}    & 52120                                               & 11464                                   & 10616                                  & 1125    & 12       & 44       & 3.52    & 2.08     & 0.97     & \multicolumn{1}{c}{\parbox[t]{1em}{\multirow{-3}{*}{\rotatebox[origin=c]{90}{\textbf{Anon}}}}} \\ \hline
+
+                \multicolumn{1}{c|}{Mean}      & 39731                                               & 13112                                   & 10623                                  & 841     & 67       & 34       & 3.38    & 3.24     & 0.98     & \multicolumn{1}{c}{}                                                                           \\ \cline{1-10}
+                \multicolumn{1}{c|}{Deviation} & 1824                                                & 257                                     & 110                                    & 106     & 7        & 0        & 0.04    & 0.06     & 0.02     & \multicolumn{1}{c}{}                                                                           \\ \cline{1-10}
+                \multicolumn{1}{c|}{Median}    & 39742                                               & 13008                                   & 10604                                  & 814     & 72       & 34       & 3.38    & 3.25     & 0.97     & \multicolumn{1}{c}{\parbox[t]{1em}{\multirow{-3}{*}{\rotatebox[origin=c]{90}{\textbf{Eph}}}}}  \\ \hline
+
+                \multicolumn{1}{c|}{Mean}      & 44273                                               & 13098                                   & 11112                                  & 1312    & 75       & 81       & 3.47    & 3.14     & 0.98     & \multicolumn{1}{c}{}                                                                           \\ \cline{1-10}
+                \multicolumn{1}{c|}{Deviation} & 1518                                                & 250                                     & 112                                    & 201     & 8        & 1        & 0.04    & 0.10     & 0.01     & \multicolumn{1}{c}{}                                                                           \\ \cline{1-10}
+                \multicolumn{1}{c|}{Median}    & 43914                                               & 12994                                   & 11092                                  & 1319    & 80       & 81       & 3.48    & 3.16     & 0.98     & \multicolumn{1}{c}{\parbox[t]{1em}{\multirow{-3}{*}{\rotatebox[origin=c]{90}{\textbf{Post}}}}} \\
+            \end{tabular}
+        }
+    }
+    \caption{Comparison table for Diffie-Hellman.}
+    \label{tab:DH}
+\end{table}
