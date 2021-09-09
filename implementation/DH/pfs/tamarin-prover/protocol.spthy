@@ -207,7 +207,7 @@ begin
   /*
    * Expected result: False
    */
-  lemma SecrecyClientToServerPFS:
+  lemma SecrecyClientToServerPostCompromise:
     "
       ∀ k m #i.
         /* Whenever a client sends a message */
@@ -224,7 +224,7 @@ begin
   /*
    * Expected result: False
    */
-  lemma SecrecyServerToClientPFS:
+  lemma SecrecyServerToClientPostCompromise:
     "
       ∀ k m #i.
         /* Whenever a server sends a message */
