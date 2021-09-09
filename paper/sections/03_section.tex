@@ -9,7 +9,7 @@ The full models of the following examples are freely available on github \cite{C
 
 \subsection{Diffie-Hellman key exchange}
 
-We will examine three different models for the Diffie-Hellman key exchange protocol: anonymous, ephemeral and ephemeral with Perfect Forward Secrecy. This allows us to explore many advanced features and modelling techniques of each tool. \Cref{fig:dh-key-exchange} shows a schematic representation of the protocol.
+We will examine three different models for the Diffie-Hellman key exchange protocol: anonymous, ephemeral and ephemeral with post-compromise of keys. This allows us to explore many advanced features and modelling techniques of each tool. \Cref{fig:dh-key-exchange} shows a schematic representation of the protocol.
 
 In the anonymous version we model an un-authenticated Diffie-Hellman, where no security property can hold as the adversary is free to perform a man-in-the-middle attack \cite{MITM-DH}.
 
@@ -20,36 +20,36 @@ Finally, we model a Diffie-Hellman with post-compromise of ephemeral keys. This 
 \begin{figure}[t]
     \setmscoptions
     \begin{msc}{}
-    \setmscscale{.7} 
-    
-    \declinst{client}{}{Client}
-    \declinst{server}{}{Server}
-    
-    \action*{\parbox{3.5cm}{\centering
-        Knows $g, p$\\
-        $c \in \Z$\\
-        $g_c := \modexp{g}{c}{p}$
-    }}{client}
+        \setmscscale{.7}
 
-    \nextlevel[5]
-    \mess{$g_c$}{client}{server}
-    \nextlevel
+        \declinst{client}{}{Client}
+        \declinst{server}{}{Server}
 
-    \action*{\parbox{3.5cm}{\centering
-        Knows $g, p$\\
-        $s \in \Z$\\
-        $g_s := \modexp{g}{s}{p}$\\
-        $\skey{c} := \modexp{g_c}{s}{p}$
-    }}{server}
+        \action*{\parbox{3.5cm}{\centering
+                Knows $g, p$\\
+                $c \in \Z$\\
+                $g_c := \modexp{g}{c}{p}$
+            }}{client}
 
-    \nextlevel[6]
-    \mess{$g_s$}{server}{client}
-    \nextlevel
+        \nextlevel[5]
+        \mess{$g_c$}{client}{server}
+        \nextlevel
 
-    \action*{\parbox{3.5cm}{\centering
-        $\key{cs} := \modexp{g_s}{c}{p}$
-    }}{client}
-    \nextlevel
+        \action*{\parbox{3.5cm}{\centering
+                Knows $g, p$\\
+                $s \in \Z$\\
+                $g_s := \modexp{g}{s}{p}$\\
+                $\skey{c} := \modexp{g_c}{s}{p}$
+            }}{server}
+
+        \nextlevel[6]
+        \mess{$g_s$}{server}{client}
+        \nextlevel
+
+        \action*{\parbox{3.5cm}{\centering
+                $\key{cs} := \modexp{g_s}{c}{p}$
+            }}{client}
+        \nextlevel
 
     \end{msc}
     \centering
@@ -59,7 +59,7 @@ Finally, we model a Diffie-Hellman with post-compromise of ephemeral keys. This 
 
 \subsubsection{Implementation notes}
 
-We will describe implementation details worth of note in the next paragraphs. Notice that we will use an incremental approach, describing only what was \textit{changed} between different versions. 
+We will describe implementation details worth of note in the next paragraphs. Notice that we will use an incremental approach, describing only what was \textit{changed} between different versions.
 
 \paragraph{Anonymous} The implementation of the anonymous version is straightforward. We use two particular constructs for Proverif and Tamarin to store keys: tables and persistent facts, respectively. Both serve the same purpose: store some permanent information (which is not, by default, available to the attacker). The first supports two operations: \textit{insert} and \textit{get}. The latter is, in essence, a \textit{fact} with the additional property of never being removed from the global state.
 
@@ -121,39 +121,39 @@ principal Server [
 \begin{figure}[t]
     \setmscoptions
     \begin{msc}{}
-    \setmscscale{.7} 
-    
-    \declinst{alice}{}{Alice}
-    \declinst{bob}{}{Bob}
-    
-    \action*{\parbox{3.5cm}{\centering
-        Knows $\skey{A}, \pkey{A}$\\
-        Knows $\pkey{B}$
-    }}{alice}
+        \setmscscale{.7}
 
-    \action*{\parbox{3.5cm}{\centering
-        Knows $\skey{B}, \pkey{B}$\\
-        Knows $\pkey{A}$
-    }}{bob}
-    \nextlevel[4]
+        \declinst{alice}{}{Alice}
+        \declinst{bob}{}{Bob}
 
-    \action*{\parbox{3.5cm}{\centering
-        Generates $N_A$
-    }}{alice}
+        \action*{\parbox{3.5cm}{\centering
+                Knows $\skey{A}, \pkey{A}$\\
+                Knows $\pkey{B}$
+            }}{alice}
 
-    \nextlevel[3]    
-    \mess{$\enc{N_A, A}{\pkey{B}}$}{alice}{bob}
-    \nextlevel
+        \action*{\parbox{3.5cm}{\centering
+                Knows $\skey{B}, \pkey{B}$\\
+                Knows $\pkey{A}$
+            }}{bob}
+        \nextlevel[4]
+
+        \action*{\parbox{3.5cm}{\centering
+                Generates $N_A$
+            }}{alice}
+
+        \nextlevel[3]
+        \mess{$\enc{N_A, A}{\pkey{B}}$}{alice}{bob}
+        \nextlevel
 
 
-    \action*{\parbox{3.5cm}{\centering
-        Generates $N_B$
-    }}{bob}
+        \action*{\parbox{3.5cm}{\centering
+                Generates $N_B$
+            }}{bob}
 
-    \nextlevel[3]
-    \mess{$\enc{N_A, N_B}{\pkey{A}}$}{bob}{alice}
-    \nextlevel[2]
-    \mess{$\enc{N_B}{\pkey{B}}$}{alice}{bob}
+        \nextlevel[3]
+        \mess{$\enc{N_A, N_B}{\pkey{A}}$}{bob}{alice}
+        \nextlevel[2]
+        \mess{$\enc{N_B}{\pkey{B}}$}{alice}{bob}
 
     \end{msc}
 
@@ -168,7 +168,7 @@ The next case-study is the Needham-Schroeder Public Key protocol. Two versions a
 
 In order to re-discover the attack, we model the protocol in a way that allows the attacker to decide whom the honest initiator executes the protocol with. The responder, however, only wishes to engage with the honest initiator.
 
-\paragraph{Flawed} 
+\paragraph{Flawed}
 
 In Proverif, to allow the behaviour described above, we let the attacker send the principals to the initiator at the start of its macro:
 
@@ -195,3 +195,22 @@ Bob -> Alice: K_PB
 
 
 \paragraph{Fixed} No changes to the models were applied but the fix to the Needham-Schroeder Public Key protocol described at the start of \cref{sec:NSPK}. Notice that we are not able to model the fixed version in Verifpal as the tool infers incorrect results ignoring checked primitives (see \cite{VerifpalManual}).
+
+\subsection{Results}
+
+All three tools returned the expected result:
+\begin{itemize}
+    \item{Diffie-Hellman
+                \begin{itemize}
+                    \item Anonymous: secrecy and authentication of both parties does not hold;
+                    \item Ephemeral: secrecy of client messages and authentication of the server holds. Secrecy of server messages does not hold as the server is willing to initiate a run of the protocol with anybody, even the attacker;
+                    \item Post-Compromise Ephemeral: secrecy of client messages no longer holds, but messages from the server are still authenticated.
+                \end{itemize}
+          }
+    \item{Needham-Schroeder Public Key
+                \begin{itemize}
+                    \item Flawed: Secrecy of the nonces and authentication do not hold.
+                    \item Fixed: Nonce secrecy and authentication of the initiator hold. However, as the initiator is willing to execute the protocol with anyone, authentication of the responder does not hold.
+                \end{itemize}
+          }
+\end{itemize}

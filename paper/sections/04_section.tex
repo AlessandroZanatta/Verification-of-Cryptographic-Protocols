@@ -52,33 +52,33 @@ However, Tamarin and Proverif also offer a graph view of the attack, which is fa
 
 \subsection{Expressiveness}
 \Cref{tbl:expressiveness} shows expressiveness of analyzed tools.
-As we already noticed, all tools assume unbounded sessions. Tamarin's equational theory, with its complex Diffie-Hellman theory (which comprehends 6 equations, including inverse), is way more expressive then the other two tools (in which only commutativity of exponents is possible). Verifpal additionally puts a cap on the number of exponentiations to two, which is not high enough to model Diffie-Hellman with three or more parties \cite{MultipartyDH}. 
+All tools assume unbounded sessions. Tamarin's equational theory, with its complex Diffie-Hellman theory (which comprehends 6 equations, including inverse), is way more expressive then the other two tools (in which only commutativity of exponents is possible). Verifpal additionally puts a cap on the number of exponentiations to two, which is not high enough to model Diffie-Hellman with three or more parties \cite{MultipartyDH}.
 
 Proverif support to state is limited to tables, while Tamarin and Verifpal naturally support stateful principals (via different formalisms and syntaxes). Moreover, observational equivalence\footnote{Observational equivalence expresses that two systems appear the same to the environment.} is not supported by Verifpal (which only supports equivalence of terms), but it supports linkability\footnote{Verifpal uses the following definition \cite{VerifpalFoundations}: ``for two
-observed values, the adversary cannot distinguish between a protocol execution in
-which they belong to the same user and a protocol execution in which they belong to
-two different users''.}.
+    observed values, the adversary cannot distinguish between a protocol execution in
+    which they belong to the same user and a protocol execution in which they belong to
+    two different users''.}.
 
 \begin{table}[!ht]
-\renewcommand{\arraystretch}{1.5}
-\setlength\arrayrulewidth{1pt}
-\rowcolors{2}{gray!25}{white}
-\makebox[\textwidth][c]{
-    \scalebox{0.9}{
-        \begin{tabular}{c|ccccc}
-        \multicolumn{1}{l|}{} & \textbf{Unbounded} & \textbf{Equational theory} & \textbf{State} & \textbf{Obs. Equiv.} & \textbf{Linkability} \\ \hline
-        \textbf{Tamarin}  & \fullcirc & \fullcirc & \fullcirc & \fullcirc  & \emptycirc \\
-        \textbf{Proverif} & \fullcirc & \halfcirc & \halfcirc & \fullcirc  & \emptycirc \\
-        \textbf{Verifpal} & \fullcirc & \halfcirc & \fullcirc & \emptycirc & \fullcirc
-        \end{tabular}
+    \renewcommand{\arraystretch}{1.5}
+    \setlength\arrayrulewidth{1pt}
+    \rowcolors{2}{gray!25}{white}
+    \makebox[\textwidth][c]{
+        \scalebox{0.9}{
+            \begin{tabular}{c|ccccc}
+                \multicolumn{1}{l|}{} & \textbf{Unbounded} & \textbf{Equational theory} & \textbf{State} & \textbf{Obs. Equiv.} & \textbf{Linkability} \\ \hline
+                \textbf{Tamarin}      & \fullcirc          & \fullcirc                  & \fullcirc      & \fullcirc            & \emptycirc           \\
+                \textbf{Proverif}     & \fullcirc          & \halfcirc                  & \halfcirc      & \fullcirc            & \emptycirc           \\
+                \textbf{Verifpal}     & \fullcirc          & \halfcirc                  & \fullcirc      & \emptycirc           & \fullcirc
+            \end{tabular}
+        }
     }
-}
-\caption{Expressiveness of tools.}
-\label{tbl:expressiveness}
+    \caption{Expressiveness of tools.}
+    \label{tbl:expressiveness}
 \end{table}
 
 \subsection{Efficiency}
-\Cref{tab:DH,tab:NSPK} shows three metrics for each tool and protocol version: peak memory usage (in kb), elapsed time since start and cpu time (as system load). 
+\Cref{tab:DH,tab:NSPK} shows three metrics for each tool and protocol version: peak memory usage (in kb), elapsed time since start and cpu time (as system load).
 
 As it can be seen, Tamarin memory usage is about 3 to 5 times the one of Proverif and Verifpal, while time to complete proofs is about one to two orders of magnitude higher. We can also notice that Proverif is a single-threaded prover\footnote{As cpu time is always $\leq 1$, this means that Proverif is using at most a single core.}, while Tamarin and Verifpal are extensively using all available cores\footnote{The benchmark system has a total of 4 cores.}.
 
@@ -86,78 +86,79 @@ As it can be seen, Tamarin memory usage is about 3 to 5 times the one of Proveri
 \input{tables/NSPK}
 
 \newpage
-\subsection{Sound and complete?}
+\subsection{Soundness and completeness}
 
 Let us define, in an informal way, what soundness and completeness of formal verification tools means. Please refer to \cite{Furer89oncompleteness} for a more detailed description.
 
-\textbf{Soundness} means that any statement that can be proved is valid (i.e. there is no proof for a false statement).
+\textbf{Soundness} means that any statement that can be proven is valid (i.e. there is no proof for a false statement).
 
 \textbf{Completeness} means that the proof system is powerful enough to prove any valid statement.
 
 Soundness and completeness of analyzed tools is summarized in \cref{tbl:sound-complete}.
+Tamarin is both sound and complete, meaning that it will always give the correct answer to queries, assuming termination. Proverif, being sound but not complete, may be unable to prove some statements and terminate with an inconclusive result. Finally, Verifpal has no formal guarantee at all, but evidence has shown that in real-case scenarios the tool performs correctly.
 
 \begin{table}[!ht]
-\centering
-\setlength\arrayrulewidth{1pt}
-\renewcommand{\arraystretch}{1.4}
-\rowcolors{2}{gray!25}{white}
-\scalebox{0.9}{
-    \begin{tabular}{c|cc}
-    \multicolumn{1}{l|}{} & \textbf{Soundness} & \textbf{Completeness}  \\ \hline
-    \textbf{Tamarin prover} & \cmark & \cmark \\
-    \textbf{Proverif}       & \cmark & \xmark \\
-    \textbf{Verifpal}       & \xmark & \xmark
-    \end{tabular}
-}
-\caption{Soundness and completeness of Tamarin, Proverif and Verifpal.}
-\label{tbl:sound-complete}
+    \centering
+    \setlength\arrayrulewidth{1pt}
+    \renewcommand{\arraystretch}{1.4}
+    \rowcolors{2}{gray!25}{white}
+    \scalebox{0.9}{
+        \begin{tabular}{c|cc}
+            \multicolumn{1}{l|}{}   & \textbf{Soundness} & \textbf{Completeness} \\ \hline
+            \textbf{Tamarin prover} & \cmark             & \cmark                \\
+            \textbf{Proverif}       & \cmark             & \xmark                \\
+            \textbf{Verifpal}       & \xmark             & \xmark
+        \end{tabular}
+    }
+    \caption{Soundness and completeness of Tamarin, Proverif and Verifpal.}
+    \label{tbl:sound-complete}
 \end{table}
 
 \comment{
 Tamarin
-    Pros:
-        - More expressive formulas for security properties
-        - Sound and complete
-        - Can prove observational equivalence
-        - Possibility of manually guiding the proof when heuristics fail to do so automagically
-        - Can model many algebraic properties of groups for DH key exchanges (comes with higher computational cost!)
-        - Can model xor and elliptic curve operations
-        - Supports user defined equational theories
-        - More flexibility on post compromise properties using timepoints, but lemmas become more verbose
-        - IS SOUND AND COMPLETE
-    Cons:
-        - Probably harder to model
-        - Slower (do benchmarks!!)
+Pros:
+- More expressive formulas for security properties
+- Sound and complete
+- Can prove observational equivalence
+- Possibility of manually guiding the proof when heuristics fail to do so automagically
+- Can model many algebraic properties of groups for DH key exchanges (comes with higher computational cost!)
+- Can model xor and elliptic curve operations
+- Supports user defined equational theories
+- More flexibility on post compromise properties using timepoints, but lemmas become more verbose
+- IS SOUND AND COMPLETE
+Cons:
+- Probably harder to model
+- Slower (do benchmarks!!)
 
 
 Proverif
-    Pros:
-        - Long history
-        - Can prove observational equivalence
-        - Supports user defined equational theories
-    Cons:
-        - Uses an old-style syntax
-        - CANNOT model many algebraic properties of groups for DH key exchanges (only commutativity)
-        - IS SOUND, BUT NOT COMPLETE
+Pros:
+- Long history
+- Can prove observational equivalence
+- Supports user defined equational theories
+Cons:
+- Uses an old-style syntax
+- CANNOT model many algebraic properties of groups for DH key exchanges (only commutativity)
+- IS SOUND, BUT NOT COMPLETE
 
 
 Verifpal
-    Pros:
-        - Very simple to use (both model specification and queries), while being expressive enough for most use cases (not for 3 parties DH)
-        - Possibility to translate to proverif/coq (even though its limited)
-        - Very intuitive language
-    Cons:
-        - There may be queries that CANNOT be expressed (try finding a counterexample!)
-        - CANNOT prove observational equivalence
-        - It's very recent, still in beta
-        - CANNOT model many algebraic properties of groups for DH key exchanges (only commutativity ???)
-        - does NOT support user-defined equational theories
-        - Does NOT allow to express injectivity
-        - Does NOT produce a graphical representation of traces automatically
-        - Feels VERY different from other tools
-        - Impossible to model 3 parties DH exchange, for example
+Pros:
+- Very simple to use (both model specification and queries), while being expressive enough for most use cases (not for 3 parties DH)
+- Possibility to translate to proverif/coq (even though its limited)
+- Very intuitive language
+Cons:
+- There may be queries that CANNOT be expressed (try finding a counterexample!)
+- CANNOT prove observational equivalence
+- It's very recent, still in beta
+- CANNOT model many algebraic properties of groups for DH key exchanges (only commutativity ???)
+- does NOT support user-defined equational theories
+- Does NOT allow to express injectivity
+- Does NOT produce a graphical representation of traces automatically
+- Feels VERY different from other tools
+- Impossible to model 3 parties DH exchange, for example
 
-        - IS NOR SOUND NOR COMPLETE
+- IS NOR SOUND NOR COMPLETE
 
 
 }
