@@ -29,7 +29,7 @@ Finally, let us compare tool outputs when an attack trace is found. Verifpal sta
 \begin{figure}[t]
     \centering
     \makebox[\textwidth][c]{\includegraphics[scale=.65]{attack-trace-comparison}}
-    \caption{}
+    \caption{Textual traces comparison.}
     \label{fig:attack-trace}
 \end{figure}
 
@@ -79,6 +79,8 @@ Proverif support to state is limited to tables, while Tamarin and Verifpal natur
 
 \subsection{Efficiency}
 \Cref{tab:DH,tab:NSPK} shows three metrics for each tool and protocol version: peak memory usage (in kb), elapsed time since start and cpu time (as system load).
+
+Measures were taken using hyperfine \cite{hyperfine} and time \cite{time}.
 
 As it can be seen, Tamarin memory usage is about 3 to 5 times the one of Proverif and Verifpal, while time to complete proofs is about one to two orders of magnitude higher. We can also notice that Proverif is a single-threaded prover\footnote{As cpu time is always $\leq 1$, this means that Proverif is using at most a single core.}, while Tamarin and Verifpal are extensively using all available cores\footnote{The benchmark system has a total of 4 cores.}.
 
