@@ -87,6 +87,7 @@
 
 \captionsetup[table]{name=}
 \captionsetup[figure]{name=}
+\renewcommand{\lstlistingname}{}
 \captionsetup{skip=5pt,font=scriptsize,labelfont=scriptsize}
 
 \setbeamercolor{alerted text}{fg=white}
@@ -540,7 +541,7 @@ queries []
     \lstset{language=tamarin}
     \item{Tamarin $\to$ Persistent fact: \lstinline{!ClientKey(k)}}
     \lstset{language=proverif}
-    \item{Proverif $\to$ Table: \lstinline{insert ClientKeyTable(k);}}
+    \visible<2->{\item{Proverif $\to$ Table: \lstinline{insert ClientKeyTable(k);}}}
   \end{itemize}
 
   \lstset{basicstyle=\scriptsize\ttfamily}
@@ -549,7 +550,7 @@ queries []
     \begin{column}{0.5\paperwidth}
       \centering
       \lstset{language=tamarin}
-      \begin{lstlisting}
+      \begin{lstlisting}[caption=Tamarin]
 /* Send a message from client to server */
 rule ClientSendMessage:
     [
@@ -562,9 +563,11 @@ rule ClientSendMessage:
     \end{column}
 
     \begin{column}{0.5\paperwidth}
-      \centering
-      \lstset{language=proverif}
-      \begin{lstlisting}
+
+      \begin{onlyenv}<2->
+        \centering
+        \lstset{language=proverif}
+        \begin{lstlisting}[caption=Proverif]
 let ClientSendsMessage() =
   (* Generate fresh message m *)
   new m: Plaintext;
@@ -575,11 +578,12 @@ let ClientSendsMessage() =
   out(io, enc(m, k));
   0.
       \end{lstlisting}
+      \end{onlyenv}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Epehemeral Diffie-Hellman}
+\begin{frame}[fragile]{Ephemeral Diffie-Hellman}
   Server half key needs to be authenticated:
   \begin{itemize}
     \item{Tamarin $\to$ private channel with passive attacker:
@@ -587,7 +591,7 @@ let ClientSendsMessage() =
 rule CertificateExchange:
     [ CertificateOut(x) ] --> [ CertificateIn(x), Out(x) ]
       \end{lstlisting}
-          }
+          }\pause
     \item{Proverif $\to$ table (output every value we insert):
                 \begin{lstlisting}[language=proverif]
 table AuthenticatedValueTable(G).
@@ -598,7 +602,7 @@ let Server() =
   out(io, g_r);
 ...
     \end{lstlisting}
-          }
+          }\pause
     \item{Verifpal $\to$ guarded variables (between square brackets):
                 \begin{lstlisting}[language=verifpal]
 Server -> Client: [g_s], c1
@@ -618,7 +622,7 @@ rule RevealClientEphemeralKey:
     [ Out(c) ]
       \end{lstlisting}
                 Use lemma timepoints to leak the value after a certain action fact;
-          }
+          }\pause
     \lstset{language=proverif}
     \item{Proverif $\to$ create a process in \lstinline{phase 1}:
                 \begin{lstlisting}
