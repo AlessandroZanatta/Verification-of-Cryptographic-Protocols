@@ -1,0 +1,55 @@
+attacker[active]
+
+principal Alice[
+	knows public alice, bob
+	generates na, k_sa
+	k_pa = G^k_sa
+]
+
+principal Bob[
+	knows public alice, bob
+	generates nb, k_sb
+	k_pb = G^k_sb
+]
+
+Alice -> Bob: [k_pa]
+
+Bob -> Alice: k_pb
+
+principal Alice[
+	c1 = PKE_ENC(k_pb, CONCAT(alice, na))
+]
+
+Alice -> Bob: c1
+
+principal Bob[
+	alice_b, b_na = SPLIT(PKE_DEC(k_sb, c1))?
+	_ = ASSERT(alice_b, alice)?
+	c2 = PKE_ENC(k_pa, CONCAT(bob, b_na, nb))
+]
+
+Bob -> Alice: c2
+
+principal Alice[
+	bob_a, a_na, a_nb = SPLIT(PKE_DEC(k_sa, c2))?
+	_ = ASSERT(bob_a, bob)?
+	_ = ASSERT(a_na, na)?
+	c3 = PKE_ENC(k_pb, a_nb)
+]
+
+Alice -> Bob: c3
+
+principal Bob[
+	b_nb = PKE_DEC(k_sb, c3)
+	_ = ASSERT(b_nb, nb)?
+]
+
+queries[
+	confidentiality? c1
+	confidentiality? c2
+	confidentiality? c3
+	authentication? Bob -> Alice: c2
+	authentication? Alice -> Bob: c3
+	confidentiality? na
+	confidentiality? nb
+]
