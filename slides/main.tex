@@ -781,42 +781,67 @@ Bob -> Alice: K_PB
 
 \subsection{Results}
 \begin{frame}{Results}
-  Same results with every tool!
+  \begin{overlayarea}{\textwidth}{\textheight}
+    \begin{overlayarea}{\textwidth}{.3\textheight}
+      Same results with (almost) every tool!
+      \vspace*{-0.5cm}
+      \begin{columns}[t]
+        \begin{column}{0.5\textwidth}
+          \begin{table}
+            \renewcommand{\arraystretch}{1.4}
+            \rowcolors{2}{gray!25}{white}
+            \setlength\arrayrulewidth{1pt}
+            \makebox[\textwidth][c]{
+              \scalebox{0.6}{
+                \begin{tabular}{c|cc}
+                  \multicolumn{1}{l|}{}    & \textbf{Secrecy} & \textbf{Authentication} \\ \hline
+                  \textbf{Anonymous}       & \xmark           & \xmark                  \\
+                  \textbf{Ephemeral}       & Client to server & Server to client        \\
+                  \textbf{Post-compromise} & \xmark           & Server to client
+                \end{tabular}
+              }
+            }
+            \caption{Diffie-Hellman}
+          \end{table}
+        \end{column}
 
-  \vskip 0.5cm
+        \begin{column}{0.5\textwidth}
+          \begin{table}
+            \renewcommand{\arraystretch}{1.4}
+            \rowcolors{2}{gray!25}{white}
+            \setlength\arrayrulewidth{1pt}
+            \makebox[\textwidth][c]{
+              \scalebox{0.6}{
+                \begin{tabular}{c|cc}
+                  \multicolumn{1}{l|}{} & \textbf{Nonces secrecy} & \textbf{Authentication} \\ \hline
+                  \textbf{Flawed}       & \xmark                  & \xmark                  \\
+                  \textbf{Fixed}        & \cmark                  & \cmark                  \\
+                \end{tabular}
+              }
+            }
+            \caption{Needham-Schroeder Public Key}
+          \end{table}
+        \end{column}
+      \end{columns}
+    \end{overlayarea}
 
-  \begin{table}
-    \renewcommand{\arraystretch}{1.4}
-    \rowcolors{2}{gray!25}{white}
-    \setlength\arrayrulewidth{1pt}
-    \makebox[\textwidth][c]{
-      \scalebox{0.6}{
-        \begin{tabular}{c|cc}
-          \multicolumn{1}{l|}{}    & \textbf{Secrecy} & \textbf{Authentication} \\ \hline
-          \textbf{Anonymous}       & \xmark           & \xmark                  \\
-          \textbf{Ephemeral}       & Client to server & Server to client        \\
-          \textbf{Post-compromise} & \xmark           & Server to client
-        \end{tabular}
+    \begin{overlayarea}{\textwidth}{.7\textheight}
+      \only<2>{
+        \begin{figure}
+          \centering
+          \includegraphics[scale=.7]{verifpal-nspk-trace}
+        \end{figure}
       }
-    }
-    \caption{Diffie-Hellman}
-  \end{table}
-
-  \begin{table}
-    \renewcommand{\arraystretch}{1.4}
-    \rowcolors{2}{gray!25}{white}
-    \setlength\arrayrulewidth{1pt}
-    \makebox[\textwidth][c]{
-      \scalebox{0.6}{
-        \begin{tabular}{c|cc}
-          \multicolumn{1}{l|}{} & \textbf{Nonces secrecy} & \textbf{Authentication} \\ \hline
-          \textbf{Flawed}       & \xmark                  & \xmark                  \\
-          \textbf{Fixed}        & \cmark                  & \cmark                  \\
-        \end{tabular}
+      \only<3>{
+        \begin{block}{Mail from Nadim Kobeissi}
+          ``This analysis result appears to be completely correct to me. The
+          ASSERT call occurs after Bob decrypts enca. So yes, the protocol does not finish
+          its run, but Bob still manages to use the non-authentic enca before the protocol
+          is aborted! Hence the result.''
+        \end{block}
       }
-    }
-    \caption{Needham-Schroeder Public Key}
-  \end{table}
+    \end{overlayarea}
+  \end{overlayarea}
 \end{frame}
 
 \section{Tools comparison}
