@@ -28,7 +28,7 @@ Finally, let us compare tool outputs when an attack trace is found. Verifpal sta
 
 \begin{figure}[t]
     \centering
-    \makebox[\textwidth][c]{\includegraphics[scale=.65]{attack-trace-comparison}}
+    \makebox[\textwidth][c]{\includegraphics[scale=.62]{attack-trace-comparison}}
     \caption{Textual traces comparison.}
     \label{fig:attack-trace}
 \end{figure}
@@ -52,9 +52,9 @@ However, Tamarin and Proverif also offer a graph view of the attack, which is fa
 
 \subsection{Expressiveness}
 \Cref{tbl:expressiveness} shows expressiveness of analyzed tools.
-All tools assume unbounded sessions. Tamarin's equational theory, with its complex Diffie-Hellman theory (which comprehends 6 equations, including inverse), is way more expressive then the other two tools (in which only commutativity of exponents is possible). Verifpal additionally puts a cap on the number of exponentiations to two, which is not high enough to model Diffie-Hellman with three or more parties \cite{MultipartyDH}.
+All tools assume unbounded sessions. Tamarin's equational theory, with its complex Diffie-Hellman theory (which comprehends 6 equations, including multiplicative inverse), is way more expressive then the other two tools (in which only commutativity of exponents is possible). Verifpal additionally caps consecutive exponentiations at two, which is not high enough to model Diffie-Hellman with three or more parties \cite{MultipartyDH}.
 
-Proverif support to state is limited to tables, while Tamarin and Verifpal naturally support stateful principals (via different formalisms and syntaxes). Moreover, observational equivalence\footnote{Observational equivalence expresses that two systems appear the same to the environment.} is not supported by Verifpal (which only supports equivalence of terms), but it supports linkability\footnote{Verifpal uses the following definition \cite{VerifpalFoundations}: ``for two
+Proverif support to state is limited to tables, while Tamarin and Verifpal naturally support stateful principals (via different formalisms and syntaxes). Observational equivalence\footnote{Observational equivalence expresses that two systems appear the same to the environment.} is not supported by Verifpal (which only supports equivalence of terms), but it supports linkability\footnote{Verifpal uses the following definition \cite{VerifpalFoundations}: ``for two
     observed values, the adversary cannot distinguish between a protocol execution in
     which they belong to the same user and a protocol execution in which they belong to
     two different users''.}.

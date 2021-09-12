@@ -5,11 +5,11 @@
 \section{Case study}
 \label{section:case-study}
 
-The full models of the following examples are freely available on github \cite{CaseStudies}. All tools obtained the same results, the exception being Verifpal's model for the Needham-Schroeder-Lowe Public Key protocol.
+The full models of the following examples are available on github \cite{CaseStudies}. All tools obtained the same results, the exception being Verifpal's model for the Needham-Schroeder-Lowe Public Key protocol.
 
 \subsection{Diffie-Hellman key exchange}
 
-We will examine three different models for the Diffie-Hellman key exchange protocol: anonymous, ephemeral and ephemeral with post-compromise of keys. This allows us to explore many advanced features and modelling techniques of each tool. \Cref{fig:dh-key-exchange} shows a schematic representation of the protocol.
+We will examine three different models for the Diffie-Hellman key exchange protocol: anonymous, ephemeral and ephemeral with post-compromise of exponents. This allows us to explore many advanced features and modelling techniques of each tool. \Cref{fig:dh-key-exchange} shows a schematic representation of the protocol.
 
 In the anonymous version we model an un-authenticated Diffie-Hellman, where no security property can hold as the adversary is free to perform a man-in-the-middle attack \cite{MITM-DH}.
 
@@ -84,7 +84,7 @@ rule RevealClientEphemeralKey:
     [ Out(c) ]
 \end{lstlisting}
 
-This actually models a \textit{generic} compromise rule. We can exploit timepoints in security properties to assert that the compromise must happen \textbf{after} some other event (e.g. parties has exchanged a message), making this a post-compromise.
+This actually models a \textit{generic} compromise rule. We can exploit timepoints in security properties to assert that the compromise must happen \textbf{after} some other event (e.g. parties have exchanged a message), making this a post-compromise.
 
 In Proverif, we define a process macro which simply outputs the ephemeral key in phase 1:
 
@@ -224,8 +224,8 @@ All three tools returned the expected result:
 
 \lstset{language=verifpal}
 There is an exception: Verifpal reports the fixed Needham-Schroeder Public Key  protocol as flawed and finds attack traces for both authentication and confidentiality queries.
-Inspecting the result shown in \cref{fig:verifpal-nspk-trace} carefully we can notice a strange result: in the penultimate line, the checked primitive \lstinline{ASSERT}\footnote{A checked primitive in Verifpal is a primitive that aborts execution of the protocol run when it fails. A question mark at the end of a primitive indicates that it is checked. The \lstinline{ASSERT} primitive simply checks that both arguments are actually the same term.} fails right after. In reality, an execution with a failed assertion should be immediately aborted, but Verifpal uses such executions to falsify queries.
+Inspecting the tool's output shown in \cref{fig:verifpal-nspk-trace} carefully we can notice a strange result: in the penultimate line, the checked primitive \lstinline{ASSERT}\footnote{A checked primitive in Verifpal is a primitive that aborts execution of the protocol run when it fails. A question mark at the end of a primitive indicates that it is checked. The \lstinline{ASSERT} primitive simply checks that both arguments are actually the same term.} fails right after. In reality, an execution with a failed assertion should be immediately aborted, but Verifpal uses such executions to falsify queries.
 
-Moreover, \textbf{this is not a bug} but the intended behaviour. In a mail on the Verifpal's mailing list we can find the Verifpal's author opinion on a similar problem: ``This analysis result appears to be completely correct to me. The ASSERT call occurs after Bob decrypts enca. So yes, the protocol does not finish its run, but Bob still manages to use the non-authentic enca before the protocol is aborted! Hence the result'' \cite{VerifpalMail}.
+Moreover, \textbf{this is not a bug} but the intended behaviour. In a mail on the Verifpal's mailing list we can find the Verifpal's author opinion (Nadim Kobeissi) on a similar problem: ``This analysis result appears to be completely correct to me. The ASSERT call occurs after Bob decrypts enca. So yes, the protocol does not finish its run, but Bob still manages to use the non-authentic enca before the protocol is aborted! Hence the result'' \cite{VerifpalMail}.
 
 It does not seem like there is a way of changing this behaviour, but we can indeed confirm that Verifpal is reporting false traces by looking at the penultimate line: if it contains a checked primitive that obviously fails, then the attack trace is incorrect, otherwise there may be an attack. Notice that this does not mean that there is no attack trace for a certain property as the incorrect one might be masquerading a valid one.
