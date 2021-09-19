@@ -174,6 +174,9 @@
   \end{tikzpicture}}
 \newcommand*\fullcirc[1][1ex]{\tikz\fill (0,0) circle (#1);} 
 
+% Multiline comments
+\renewcommand{\comment}[1]{}
+
 %% -------------------------------------------------------------------------------- %%
 %% Languages listings                                                               %%
 %% -------------------------------------------------------------------------------- %%
@@ -238,7 +241,7 @@
 \end{frame}
 
 \begin{frame}{Outline}
-  \small
+  \footnotesize
   \tableofcontents
 \end{frame}
 
@@ -334,7 +337,6 @@
     \item{Cryptographic primitives $\to$ Functions and equational theories;}\pause
     \item{Verification $\to$ Constraint solving algorithm (backward-search and heuristics).}
   \end{itemize}
-
 \end{frame}
 
 \begin{frame}[fragile]{Labelled multiset rewriting rules}
@@ -368,21 +370,24 @@ rule ExampleRule:
 \end{frame}
 
 \subsection{Proverif}
-\begin{frame}{Proverif I}
+\begin{frame}{Proverif}
   Based on \cite{ProverifFoundations}:
   \begin{itemize}
     \item{Protocol and adversary capabilities $\to$ \myhl<5->{\hbox{Applied \picnospace}};}\pause
-    \item{Security properties $\to$ Queries on events (resembles propositional logic);}\pause
+    \item{Security properties $\to$ Queries on events (Horn clauses);}\pause
     \item{Cryptographic primitives $\to$ Constructors, destructors and equations;}\pause
     \item{Verification $\to$ Resolution algorithm applied on the protocol translation to Horn clauses.}
   \end{itemize}
 \end{frame}
+
+\comment{
 \begin{frame}{Proverif II}
   \begin{figure}
     \includegraphics[scale=0.7]{proverif-verification-method}
     \caption{Proverif's verification method.}
   \end{figure}
 \end{frame}
+}
 
 \begin{frame}[fragile]{Proverif's applied \picnospace}
   \lstset{language=proverif}
@@ -412,10 +417,11 @@ let x = M in P else Q.     (* assignment and pattern matching *)
   \lstset{language=verifpal,basicstyle=\footnotesize\ttfamily}
   Based on \cite{VerifpalManual,VerifpalFoundations}:
   \begin{itemize}
-    \item{Protocol and adversary capabilities $\to$ \lstinline{principal} blocks and message exchanges;}\pause
-    \item{Security properties $\to$ \lstinline{queries} block;}\pause
-    \item{Cryptographic primitives $\to$ pre-defined (no user-defined ones);}\pause
-    \item{Verification $\to$ Resolution algorithm in slide \ref{frame:verifpal-res-alg}.}
+    \item Protocol and adversary capabilities $\to$ \lstinline{principal} blocks and message exchanges;\pause
+    \item Security properties $\to$ \lstinline{queries} block;\pause
+    \item Cryptographic primitives $\to$ pre-defined (no user-defined ones);\pause
+    \item Verification $\to$ Custom resolution algorithm.
+          % in slide \ref{frame:verifpal-res-alg}.
   \end{itemize}
 \end{frame}
 
@@ -446,23 +452,23 @@ queries []
   \end{itemize}
 \end{frame}
 
-\begin{frame}[label={frame:verifpal-res-alg}]{Resolution steps}
-  \begin{figure}
-    \vspace*{-0.2cm}
-    \includegraphics[scale=.35]{verifpal-internals}
-    \caption{All credits to Nadim Kobeissi.}
-  \end{figure}
-  \vspace*{-0.8cm}
-  \begin{multicols}{2}
-    \begin{enumerate}
-      \item{Gather values;}
-      \item{Populate attacker state;}
-      \item{Apply transformations;}
-      \item{Prepare next mutations;}
-      \item{Mutate protocol executions.}
-    \end{enumerate}
-  \end{multicols}
-\end{frame}
+% \begin{frame}[label={frame:verifpal-res-alg}]{Resolution steps}
+%   \begin{figure}
+%     \vspace*{-0.2cm}
+%     \includegraphics[scale=.35]{verifpal-internals}
+%     \caption{All credits to Nadim Kobeissi.}
+%   \end{figure}
+%   \vspace*{-0.8cm}
+%   \begin{multicols}{2}
+%     \begin{enumerate}
+%       \item{Gather values;}
+%       \item{Populate attacker state;}
+%       \item{Apply transformations;}
+%       \item{Prepare next mutations;}
+%       \item{Mutate protocol executions.}
+%     \end{enumerate}
+%   \end{multicols}
+% \end{frame}
 
 \section{Case studies}
 \framecard[UniBlue]{Case studies:\\Diffie-Hellman and\\Needham-Schroeder Public Key}
@@ -477,7 +483,7 @@ queries []
   \vskip 1cm
 
   \begin{block}{Source code}
-    The source code of the case studies in the next few slides is available on github \cite{CaseStudies}.
+    The source code of the case studies is available on github \cite{CaseStudies}.
   \end{block}
 \end{frame}
 
@@ -532,131 +538,131 @@ queries []
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Anonymous Diffie-Hellman}
-  Straightforward implementation.
+% \begin{frame}[fragile]{Anonymous Diffie-Hellman}
+%   Straightforward implementation.
 
-  \vskip 0.25cm
+%   \vskip 0.25cm
 
-  To store keys (for message exchanges):
-  \begin{itemize}
-    \lstset{language=tamarin}
-    \item{Tamarin $\to$ Persistent fact: \lstinline{!ClientKey(k)}}
-    \lstset{language=proverif}
-    \visible<2->{\item{Proverif $\to$ Table: \lstinline{insert ClientKeyTable(k);}}}
-  \end{itemize}
+%   To store keys (for message exchanges):
+%   \begin{itemize}
+%     \lstset{language=tamarin}
+%     \item{Tamarin $\to$ Persistent fact: \lstinline{!ClientKey(k)}}
+%     \lstset{language=proverif}
+%     \visible<2->{\item{Proverif $\to$ Table: \lstinline{insert ClientKeyTable(k);}}}
+%   \end{itemize}
 
-  \lstset{basicstyle=\scriptsize\ttfamily}
-  \begin{columns}[onlytextwidth,t]
-    \hspace*{-.60cm}
-    \begin{column}{0.5\paperwidth}
-      \centering
-      \lstset{language=tamarin}
-      \begin{lstlisting}[caption=Tamarin]
-/* Send a message from client to server */
-rule ClientSendMessage:
-    [
-      Fr(~m),
-      !ClientKey(k)
-    ]
-  --[ ClientSentMessage(k, ~m) ]->
-    [ Out(senc(<'CtoS', ~m>, k)) ]
-      \end{lstlisting}
-    \end{column}
+%   \lstset{basicstyle=\scriptsize\ttfamily}
+%   \begin{columns}[onlytextwidth,t]
+%     \hspace*{-.60cm}
+%     \begin{column}{0.5\paperwidth}
+%       \centering
+%       \lstset{language=tamarin}
+%       \begin{lstlisting}[caption=Tamarin]
+% /* Send a message from client to server */
+% rule ClientSendMessage:
+%     [
+%       Fr(~m),
+%       !ClientKey(k)
+%     ]
+%   --[ ClientSentMessage(k, ~m) ]->
+%     [ Out(senc(<'CtoS', ~m>, k)) ]
+%       \end{lstlisting}
+%     \end{column}
 
-    \begin{column}{0.5\paperwidth}
+%     \begin{column}{0.5\paperwidth}
 
-      \begin{onlyenv}<2->
-        \centering
-        \lstset{language=proverif}
-        \begin{lstlisting}[caption=Proverif]
-let ClientSendsMessage() =
-  (* Generate fresh message m *)
-  new m: Plaintext;
+%       \begin{onlyenv}<2->
+%         \centering
+%         \lstset{language=proverif}
+%         \begin{lstlisting}[caption=Proverif]
+% let ClientSendsMessage() =
+%   (* Generate fresh message m *)
+%   new m: Plaintext;
 
-  (* Get client key from table *)
-  get ClientKey(k) in
-  event ClientSentMessage(m, k);
-  out(io, enc(m, k));
-  0.
-      \end{lstlisting}
-      \end{onlyenv}
-    \end{column}
-  \end{columns}
-\end{frame}
+%   (* Get client key from table *)
+%   get ClientKey(k) in
+%   event ClientSentMessage(m, k);
+%   out(io, enc(m, k));
+%   0.
+%       \end{lstlisting}
+%       \end{onlyenv}
+%     \end{column}
+%   \end{columns}
+% \end{frame}
 
-\begin{frame}[fragile]{Ephemeral Diffie-Hellman}
-  Server half key needs to be authenticated:
-  \begin{itemize}
-    \item{Tamarin $\to$ private channel with passive attacker:
-                \begin{lstlisting}[language=tamarin]
-rule CertificateExchange:
-    [ CertificateOut(x) ] --> [ CertificateIn(x), Out(x) ]
-      \end{lstlisting}
-          }\pause
-    \item{Proverif $\to$ table (output every value we insert):
-                \begin{lstlisting}[language=proverif]
-table AuthenticatedValueTable(G).
+% \begin{frame}[fragile]{Ephemeral Diffie-Hellman}
+%   Server half key needs to be authenticated:
+%   \begin{itemize}
+%     \item{Tamarin $\to$ private channel with passive attacker:
+%                 \begin{lstlisting}[language=tamarin]
+% rule CertificateExchange:
+%     [ CertificateOut(x) ] --> [ CertificateIn(x), Out(x) ]
+%       \end{lstlisting}
+%           }\pause
+%     \item{Proverif $\to$ table (output every value we insert):
+%                 \begin{lstlisting}[language=proverif]
+% table AuthenticatedValueTable(G).
 
-let Server() =
-  ...
-  insert AuthenticatedValueTable(g_r);
-  out(io, g_r);
-...
-    \end{lstlisting}
-          }\pause
-    \item{Verifpal $\to$ guarded variables (between square brackets):
-                \begin{lstlisting}[language=verifpal]
-Server -> Client: [g_s], c1
-    \end{lstlisting}
-          }
-  \end{itemize}
-\end{frame}
+% let Server() =
+%   ...
+%   insert AuthenticatedValueTable(g_r);
+%   out(io, g_r);
+% ...
+%     \end{lstlisting}
+%           }\pause
+%     \item{Verifpal $\to$ guarded variables (between square brackets):
+%                 \begin{lstlisting}[language=verifpal]
+% Server -> Client: [g_s], c1
+%     \end{lstlisting}
+%           }
+%   \end{itemize}
+% \end{frame}
 
-\begin{frame}[t,fragile]{Post-Compromise Ephemeral DH I}
-  We model the leakage of ephemeral keys:
-  \begin{itemize}
-    \item{Tamarin $\to$ Fact for the ephemeral key, rule to output it:
-                \begin{lstlisting}[language=tamarin]
-rule RevealClientEphemeralKey:
-    [ ClientEphemeralKey(c) ]
-  --[ RevealedClientEphemeralKey(c) ]->
-    [ Out(c) ]
-      \end{lstlisting}
-                Use lemma timepoints to leak the value after a certain action fact;
-          }\pause
-    \lstset{language=proverif}
-    \item{Proverif $\to$ create a process in \lstinline{phase 1}:
-                \begin{lstlisting}
-let PostRevealClientEphemeralKey =
-  phase 1;
-  (* Get the client's ephemeral key and output it *)
-  get ClientEphemeralKeyTable(c) in
-  out(io, c);
-  event PostRevealedClientEphemeralKeyTable(c);
-  0.
-    \end{lstlisting}
-          }
-  \end{itemize}
-\end{frame}
+% \begin{frame}[t,fragile]{Post-Compromise Ephemeral DH I}
+%   We model the leakage of ephemeral keys:
+%   \begin{itemize}
+%     \item{Tamarin $\to$ Fact for the ephemeral key, rule to output it:
+%                 \begin{lstlisting}[language=tamarin]
+% rule RevealClientEphemeralKey:
+%     [ ClientEphemeralKey(c) ]
+%   --[ RevealedClientEphemeralKey(c) ]->
+%     [ Out(c) ]
+%       \end{lstlisting}
+%                 Use lemma timepoints to leak the value after a certain action fact;
+%           }\pause
+%     \lstset{language=proverif}
+%     \item{Proverif $\to$ create a process in \lstinline{phase 1}:
+%                 \begin{lstlisting}
+% let PostRevealClientEphemeralKey =
+%   phase 1;
+%   (* Get the client's ephemeral key and output it *)
+%   get ClientEphemeralKeyTable(c) in
+%   out(io, c);
+%   event PostRevealedClientEphemeralKeyTable(c);
+%   0.
+%     \end{lstlisting}
+%           }
+%   \end{itemize}
+% \end{frame}
 
-\begin{frame}[t,fragile]{Post-Compromise Ephemeral DH II}
-  \lstset{language=verifpal}
-  \begin{itemize}
-    \item{Verifpal $\to$ very similar to Proverif, using \lstinline{phase} and \lstinline{leaks}:
-    \begin{lstlisting}
-phase [1]
+% \begin{frame}[t,fragile]{Post-Compromise Ephemeral DH II}
+%   \lstset{language=verifpal}
+%   \begin{itemize}
+%     \item{Verifpal $\to$ very similar to Proverif, using \lstinline{phase} and \lstinline{leaks}:
+%     \begin{lstlisting}
+% phase [1]
 
-principal Client [
-  leaks c
-]
+% principal Client [
+%   leaks c
+% ]
 
-principal Server [
-  leaks s
-]
-\end{lstlisting}
-    }
-  \end{itemize}
-\end{frame}
+% principal Server [
+%   leaks s
+% ]
+% \end{lstlisting}
+%     }
+%   \end{itemize}
+% \end{frame}
 
 \subsection{Needham-Schroeder Public Key}
 \begin{frame}[t]{Needham-Schroeder Public Key}
@@ -711,73 +717,69 @@ principal Server [
     \end{figure}
   \end{columns}
   \begin{block}{Important modelling trick}
-    We need to allow the attacker to decide whom the initiator executes the protocol with, otherwise we would not find the flaw.
+    We need to allow the attacker to decide whom the initiator executes the protocol with.
   \end{block}
 \end{frame}
 
-\begin{frame}[t,fragile]{Flawed NSPK protocol I}
-  Modelling attacker deciding responder:
-  \begin{itemize}
-    \item{Tamarin $\to$ we fix the initiator as Alice (i.e. the attacker chooses only the responder):
-                \begin{lstlisting}[language=tamarin]
-rule 1_Initiator:
-  let I = 'Alice' in
-    [        
-      /* Responder identity */
-      In(R),
-      /* Get public key of responder */
-      !PublicKey(R, pk_R),
-      ...
-    ]
-  --[...]->
-    [...]
-      \end{lstlisting}
-                Two rules are used to create the persistent fact for key pairs of both honest parties and attacker;
-          }
-  \end{itemize}
-\end{frame}
-\begin{frame}[t,fragile]{Flawed NSPK protocol II}
-  \begin{itemize}
-    \item{Proverif $\to$ in Proverif we let the attacker decide every participant identity:
-                \begin{lstlisting}[language=proverif]
-let Initiator() =
-  (* Attacker sends communicating parties *)
-  in(io, (X: Principal, rUser: Principal));
-  
-  (* We restrict them: X must be honest and they must differ *)
-  let iUser = isHonest(X, Alice, Bob) in
-  if iUser <> rUser then
-  
-  (* Get private key of initiator *)
-  get PrivateKeyTable(=iUser, skI) in
+% \begin{frame}[t,fragile]{Flawed NSPK protocol I}
+%   Modelling attacker deciding responder:
+%   \begin{itemize}
+%     \item{Tamarin $\to$ we fix the initiator as Alice (i.e. the attacker chooses only the responder):
+%                 \begin{lstlisting}[language=tamarin]
+% rule 1_Initiator:
+%   let I = 'Alice' in
+%     [        
+%       /* Responder identity */
+%       In(R),
+%       /* Get public key of responder */
+%       !PublicKey(R, pk_R),
+%       ...
+%     ]
+%   --[...]->
+%     [...]
+%       \end{lstlisting}
+%                 Two rules are used to create the persistent fact for key pairs of both honest parties and attacker;
+%           }
+%   \end{itemize}
+% \end{frame}
+% \begin{frame}[t,fragile]{Flawed NSPK protocol II}
+%   \begin{itemize}
+%     \item{Proverif $\to$ in Proverif we let the attacker decide every participant identity:
+%                 \begin{lstlisting}[language=proverif]
+% let Initiator() =
+%   (* Attacker sends communicating parties *)
+%   in(io, (X: Principal, rUser: Principal));
 
-  (* Get public key of responder *)
-  get PublicKeyTable(=rUser, pkR) in
-  ...
-      \end{lstlisting}
-                Similar to Tamarin, two processes create key pairs for honest parties and the attacker;
-          }
-  \end{itemize}
-\end{frame}
-\begin{frame}[t,fragile]{Flawed NSPK protocol III}
-  \begin{itemize}
-    \item{Verifpal $\to$ straightforward implementation, with a caveut. We need to pre-share public keys and responder's one must be unguarded.
-                \begin{lstlisting}[language=verifpal]
-Alice -> Bob: [K_PA]
-Bob -> Alice: K_PB
-\end{lstlisting}
-                This allows the attacker to mutate Bob's public key to its own, initiating the MITM.
-          }
-  \end{itemize}
-\end{frame}
+%   (* We restrict them: X must be honest and they must differ *)
+%   let iUser = isHonest(X, Alice, Bob) in
+%   if iUser <> rUser then
 
-\begin{frame}{Fixed NSPK protocol}
-  No changes, apart from the protocol fix.
+%   (* Get private key of initiator *)
+%   get PrivateKeyTable(=iUser, skI) in
 
-  \vskip 1cm
+%   (* Get public key of responder *)
+%   get PublicKeyTable(=rUser, pkR) in
+%   ...
+%       \end{lstlisting}
+%                 Similar to Tamarin, two processes create key pairs for honest parties and the attacker;
+%           }
+%   \end{itemize}
+% \end{frame}
+% \begin{frame}[t,fragile]{Flawed NSPK protocol III}
+%   \begin{itemize}
+%     \item{Verifpal $\to$ straightforward implementation, with a caveut. We need to pre-share public keys and responder's one must be unguarded.
+%                 \begin{lstlisting}[language=verifpal]
+% Alice -> Bob: [K_PA]
+% Bob -> Alice: K_PB
+% \end{lstlisting}
+%                 This allows the attacker to mutate Bob's public key to its own, initiating the MITM.
+%           }
+%   \end{itemize}
+% \end{frame}
 
-  Cannot model the fixed version in Verifpal as the tool seems to infer incorrect results ignoring checked primitives (see \cite{VerifpalManual}).
-\end{frame}
+% \begin{frame}{Fixed NSPK protocol}
+%   No changes, apart from the protocol fix.
+% \end{frame}
 
 \subsection{Results}
 \begin{frame}{Results}
@@ -1007,6 +1009,15 @@ Bob -> Alice: K_PB
       \end{tabular}
     }
   \end{table}
+\end{frame}
+
+\section{Conclusions}
+\begin{frame}{Conclusions}
+  \begin{itemize}
+    \item \textbf{Tamarin prover} $\rightarrow$ sound and complete, expressive but hard;
+    \item \textbf{Verifpal} $\rightarrow$ easy, usually performs correctly;
+    \item \textbf{Proverif} $\rightarrow$ balanced, sound, mature.
+  \end{itemize}
 \end{frame}
 
 \begin{frame}[t,allowframebreaks]{Bibliography}
