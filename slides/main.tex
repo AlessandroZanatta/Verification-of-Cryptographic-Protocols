@@ -54,12 +54,8 @@
 
 
 \title[University of Udine]{\LARGE Comparison of Tools for the Verification of Cryptographic Protocols}
-\date[September 2021]{\small September 20, 2021}
-\author[Alessandro Zanatta]{\small
-  Alessandro Zanatta,
-  \pdfnewline
-  Bachelor in Internet of Things, Big Data and Web
-}
+\date[September 2021]{\small September 21, 2021}
+\author[Alessandro Zanatta]{\small Alessandro Zanatta}
 \institute{\small Course in Computer Network Security}
 
 %% -------------------------------------------------------------------------------- %%
@@ -431,7 +427,8 @@ let x = M in P else Q.     (* assignment and pattern matching *)
   \begin{lstlisting}
 attacker [active]
 
-principal Alice []
+principal Alice [ knows private x ]
+Alice -> Bob: x
 principal Bob []
 
 queries []
@@ -717,7 +714,7 @@ queries []
     \end{figure}
   \end{columns}
   \begin{block}{Important modelling trick}
-    We need to allow the attacker to decide whom the initiator executes the protocol with.
+    We need to allow the attacker to decide with whom the initiator executes the protocol.
   \end{block}
 \end{frame}
 
@@ -922,11 +919,13 @@ queries []
       \begin{column}{0.4\textwidth}
         \begin{figure}
           \includegraphics[scale=.35]{tamarin-trace}
+          \caption{Tamarin trace}
         \end{figure}
       \end{column}
       \begin{column}{0.6\textwidth}
         \begin{figure}
           \includegraphics[scale=.12]{proverif-trace}
+          \caption{Proverif trace}
         \end{figure}
       \end{column}
     \end{columns}
